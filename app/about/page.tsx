@@ -25,7 +25,7 @@ const values = [
 export default function AboutPage() {
   return (
     <>
-      <section className="relative h-[50vh] min-h-[400px] flex items-center overflow-hidden -mt-[72px] pt-[72px]">
+      <section className="relative min-h-[360px] sm:min-h-[400px] md:h-[50vh] md:min-h-[420px] flex items-center overflow-hidden -mt-[72px] pt-[88px] pb-10 md:py-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/about-hero.jpg"
@@ -38,7 +38,7 @@ export default function AboutPage() {
         <div className="absolute inset-0 bg-navy/85" />
         <div className="absolute inset-0 diagonal-texture" />
         <div className="container-main relative z-10">
-          <h1 className="font-display font-extrabold text-primary-foreground text-[36px] md:text-[56px] lg:text-[72px] leading-tight">
+          <h1 className="font-display font-extrabold text-primary-foreground text-[32px] sm:text-[40px] md:text-[56px] lg:text-[72px] leading-tight">
             Built on{" "}
             <span className="relative inline-block">
               Experience
@@ -52,11 +52,11 @@ export default function AboutPage() {
       <section className="section-padding bg-card">
         <div className="container-main">
           <AnimatedSection>
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 md:gap-4">
+            <div className="grid grid-cols-2 md:flex md:flex-row md:items-center md:justify-between gap-6 sm:gap-8 md:gap-4">
               {milestones.map((m, i) => (
-                <div key={i} className="flex md:flex-col items-center md:items-center gap-4 md:gap-2 flex-1 relative">
-                  <span className="stat-number text-[40px] md:text-[72px]">{m.year}</span>
-                  <span className="text-muted-foreground font-body text-sm md:text-center">{m.label}</span>
+                <div key={i} className="flex flex-col items-center text-center gap-1 sm:gap-2 md:flex-1 relative">
+                  <span className="stat-number text-[32px] sm:text-[40px] md:text-[56px] lg:text-[72px]">{m.year}</span>
+                  <span className="text-muted-foreground font-body text-xs sm:text-sm">{m.label}</span>
                   {i < milestones.length - 1 && (
                     <div className="hidden md:block absolute top-1/2 right-0 w-full h-px border-t border-dashed border-accent/40 -z-10 translate-x-1/2" />
                   )}
@@ -70,7 +70,7 @@ export default function AboutPage() {
       <section className="section-padding bg-surface-alt">
         <div className="container-main">
           <AnimatedSection className="max-w-[800px] mx-auto text-center">
-            <blockquote className="font-display font-bold text-navy text-xl md:text-[28px] leading-relaxed">
+            <blockquote className="font-display font-bold text-navy text-lg sm:text-xl md:text-2xl lg:text-[28px] leading-relaxed">
               &ldquo;Our growth strategy is simple — acquire, strengthen, and grow specialist trade service businesses while maintaining the values that built them.&rdquo;
             </blockquote>
           </AnimatedSection>
@@ -79,10 +79,10 @@ export default function AboutPage() {
 
       <section className="section-padding bg-navy diagonal-texture">
         <div className="container-main">
-          <AnimatedSection className="text-center mb-12">
-            <h2 className="font-display font-bold text-primary-foreground text-[28px] md:text-[44px]">Our Values</h2>
+          <AnimatedSection className="text-center mb-8 sm:mb-12">
+            <h2 className="font-display font-bold text-primary-foreground text-2xl sm:text-[28px] md:text-[36px] lg:text-[44px]">Our Values</h2>
           </AnimatedSection>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {values.map((v, i) => (
               <AnimatedSection key={v.title} delay={i * 0.1}>
                 <div className="card-elevated text-center">
@@ -96,15 +96,15 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="py-12 bg-card">
+      <section className="py-10 sm:py-12 bg-card">
         <div className="container-main">
-          <AnimatedSection className="flex flex-wrap items-center justify-center gap-8 md:gap-16 text-muted-foreground font-body text-sm font-medium">
+          <AnimatedSection className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-8 md:gap-16 text-muted-foreground font-body text-xs sm:text-sm font-medium text-center">
             <span>ARCtick Licensed</span>
-            <span className="h-4 w-px bg-border" />
+            <span className="hidden sm:inline-block h-4 w-px bg-border" />
             <span>QBCC Certified</span>
-            <span className="h-4 w-px bg-border" />
+            <span className="hidden sm:inline-block h-4 w-px bg-border" />
             <span>NSW Contractor</span>
-            <span className="h-4 w-px bg-border" />
+            <span className="hidden sm:inline-block h-4 w-px bg-border" />
             <span>Veteran-Owned</span>
           </AnimatedSection>
         </div>

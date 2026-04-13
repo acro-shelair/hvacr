@@ -38,19 +38,19 @@ export default function Navbar() {
             : "bg-card/90 backdrop-blur-sm border-b border-border"
         }`}
       >
-        <div className="container-main flex items-center justify-between h-[72px]">
-          <Link href="/" aria-label="HVACR Group home" className="flex items-center">
+        <div className="container-main flex items-center justify-between h-[72px] gap-3">
+          <Link href="/" aria-label="HVACR Group home" className="flex items-center flex-shrink-0">
             <Image
               src="/hvacr-logo-web.png"
               alt="HVACR Pty Ltd"
               width={330}
               height={90}
               priority
-              className="h-10 w-auto"
+              className="h-8 sm:h-10 w-auto"
             />
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-8" aria-label="Main navigation">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8" aria-label="Main navigation">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -62,16 +62,23 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <a
               href="tel:1300227600"
-              className="hidden md:inline-flex btn-primary rounded-full text-sm h-10 px-5 gap-2"
+              className="hidden md:inline-flex btn-primary rounded-full text-xs lg:text-sm h-10 px-4 lg:px-5 gap-2"
             >
               <Phone className="w-4 h-4" />
-              CALL 1300 227 600
+              <span className="hidden lg:inline">CALL </span>1300 227 600
+            </a>
+            <a
+              href="tel:1300227600"
+              className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-full bg-accent text-accent-foreground"
+              aria-label="Call 1300 227 600"
+            >
+              <Phone className="w-5 h-5" />
             </a>
             <button
-              className="lg:hidden text-navy"
+              className="lg:hidden text-navy p-2 -mr-2"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
@@ -82,25 +89,25 @@ export default function Navbar() {
       </header>
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-[60] bg-navy flex flex-col items-center justify-center diagonal-texture">
+        <div className="fixed inset-0 z-[60] bg-navy flex flex-col items-center justify-center diagonal-texture overflow-y-auto px-6 py-20">
           <button
-            className="absolute top-5 right-5 text-primary-foreground"
+            className="absolute top-4 right-4 text-primary-foreground p-2"
             onClick={() => setMobileOpen(false)}
             aria-label="Close menu"
           >
-            <X className="w-8 h-8" />
+            <X className="w-7 h-7 sm:w-8 sm:h-8" />
           </button>
-          <nav className="flex flex-col items-center gap-8" aria-label="Mobile navigation">
+          <nav className="flex flex-col items-center gap-6 sm:gap-8 w-full max-w-xs" aria-label="Mobile navigation">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="font-display text-3xl font-bold text-primary-foreground hover:text-accent transition-colors"
+                className="font-display text-2xl sm:text-3xl font-bold text-primary-foreground hover:text-accent transition-colors"
               >
                 {link.label}
               </Link>
             ))}
-            <a href="tel:1300227600" className="btn-primary rounded-full mt-4 gap-2">
+            <a href="tel:1300227600" className="btn-primary rounded-full mt-4 gap-2 w-full">
               <Phone className="w-4 h-4" />
               CALL 1300 227 600
             </a>

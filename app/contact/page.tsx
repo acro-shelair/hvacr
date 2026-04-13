@@ -34,12 +34,12 @@ export default function ContactPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="section-padding bg-navy diagonal-texture -mt-[72px] pt-[172px]">
+      <section className="bg-navy diagonal-texture -mt-[72px] pt-[104px] sm:pt-[128px] md:pt-[172px] pb-14 sm:pb-16 md:pb-20 lg:pb-[100px]">
         <div className="container-main">
-          <h1 className="font-display font-extrabold text-primary-foreground text-[36px] md:text-[56px] leading-tight mb-4">
+          <h1 className="font-display font-extrabold text-primary-foreground text-[32px] sm:text-[40px] md:text-[56px] leading-tight mb-4">
             Contact Us
           </h1>
-          <p className="text-primary-foreground/70 font-body text-lg max-w-[450px]">
+          <p className="text-primary-foreground/70 font-body text-base sm:text-lg max-w-[450px]">
             We&apos;d love to hear from you. Reach out for a quote, enquiry, or to discuss your project.
           </p>
         </div>
@@ -47,15 +47,15 @@ export default function ContactPage() {
 
       <section className="section-padding bg-card">
         <div className="container-main">
-          <div className="grid lg:grid-cols-12 gap-12">
+          <div className="grid lg:grid-cols-12 gap-8 md:gap-12">
             <AnimatedSection className="lg:col-span-7">
-              <h2 className="section-heading mb-8">Get in Touch</h2>
+              <h2 className="section-heading mb-6 sm:mb-8">Get in Touch</h2>
               <ContactForm />
             </AnimatedSection>
 
             <AnimatedSection className="lg:col-span-5" delay={0.15}>
-              <div className="bg-navy diagonal-texture rounded-2xl p-8 text-primary-foreground">
-                <h3 className="font-display font-bold text-xl mb-6">Contact Details</h3>
+              <div className="bg-navy diagonal-texture rounded-2xl p-6 sm:p-8 text-primary-foreground">
+                <h3 className="font-display font-bold text-lg sm:text-xl mb-5 sm:mb-6">Contact Details</h3>
                 <address className="not-italic space-y-5">
                   <div className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 text-accent mt-0.5" />

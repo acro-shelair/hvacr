@@ -37,28 +37,32 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
       {textFields.map((field) => (
         <div key={field.name}>
-          <label className="block font-body font-medium text-charcoal text-sm mb-1.5">
+          <label htmlFor={field.name} className="block font-body font-medium text-charcoal text-sm mb-1.5">
             {field.label}
           </label>
           <input
+            id={field.name}
             type={field.type}
             required={field.name !== "phone"}
+            autoComplete={field.name === "email" ? "email" : field.name === "phone" ? "tel" : "name"}
+            inputMode={field.name === "phone" ? "tel" : field.name === "email" ? "email" : undefined}
             value={form[field.name]}
             onChange={(e) => setForm({ ...form, [field.name]: e.target.value })}
-            className="w-full border border-input rounded-lg px-4 py-3 font-body text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors bg-card"
+            className="w-full border border-input rounded-lg px-4 py-3 text-base sm:text-sm font-body text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors bg-card"
           />
         </div>
       ))}
 
       <div>
-        <label className="block font-body font-medium text-charcoal text-sm mb-1.5">Enquiry Type</label>
+        <label htmlFor="enquiry-type" className="block font-body font-medium text-charcoal text-sm mb-1.5">Enquiry Type</label>
         <select
+          id="enquiry-type"
           value={form.type}
           onChange={(e) => setForm({ ...form, type: e.target.value })}
-          className="w-full border border-input rounded-lg px-4 py-3 font-body text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors bg-card"
+          className="w-full border border-input rounded-lg px-4 py-3 text-base sm:text-sm font-body text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors bg-card"
         >
           <option>General Enquiry</option>
           <option>Refrigeration</option>
@@ -69,17 +73,18 @@ export default function ContactForm() {
       </div>
 
       <div>
-        <label className="block font-body font-medium text-charcoal text-sm mb-1.5">Message</label>
+        <label htmlFor="message" className="block font-body font-medium text-charcoal text-sm mb-1.5">Message</label>
         <textarea
+          id="message"
           rows={5}
           required
           value={form.message}
           onChange={(e) => setForm({ ...form, message: e.target.value })}
-          className="w-full border border-input rounded-lg px-4 py-3 font-body text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors bg-card resize-none"
+          className="w-full border border-input rounded-lg px-4 py-3 text-base sm:text-sm font-body text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors bg-card resize-none"
         />
       </div>
 
-      <button type="submit" className="btn-primary gap-2">
+      <button type="submit" className="btn-primary gap-2 w-full sm:w-auto">
         <Send className="w-4 h-4" /> Send Enquiry
       </button>
     </form>

@@ -90,15 +90,15 @@
 }
 
 @utility section-padding {
-  @apply py-16 md:py-[100px];
+  @apply py-14 sm:py-16 md:py-20 lg:py-[100px];
 }
 
 @utility container-main {
-  @apply max-w-[1200px] mx-auto px-5 md:px-8;
+  @apply max-w-[1200px] mx-auto px-4 sm:px-5 md:px-8;
 }
 
 @utility card-elevated {
-  @apply bg-card rounded-xl p-8;
+  @apply bg-card rounded-xl p-6 sm:p-8;
   box-shadow: var(--shadow-card);
 }
 
@@ -118,17 +118,17 @@
 }
 
 @utility btn-primary {
-  @apply inline-flex items-center justify-center bg-accent text-accent-foreground font-medium px-6 h-[52px] rounded-lg transition-transform duration-200 hover:scale-[1.03] text-[15px];
+  @apply inline-flex items-center justify-center bg-accent text-accent-foreground font-medium px-5 sm:px-6 h-12 sm:h-[52px] rounded-lg transition-transform duration-200 hover:scale-[1.03] text-[15px];
   font-family: var(--font-body);
 }
 
 @utility btn-outline-white {
-  @apply inline-flex items-center justify-center border-2 border-white text-white font-medium px-6 h-[52px] rounded-lg transition-all duration-200 hover:bg-white/10 text-[15px];
+  @apply inline-flex items-center justify-center border-2 border-white text-white font-medium px-5 sm:px-6 h-12 sm:h-[52px] rounded-lg transition-all duration-200 hover:bg-white/10 text-[15px];
   font-family: var(--font-body);
 }
 
 @utility btn-outline-navy {
-  @apply inline-flex items-center justify-center border-2 border-navy text-navy font-medium px-6 h-[52px] rounded-lg transition-all duration-200 hover:bg-navy/5 text-[15px];
+  @apply inline-flex items-center justify-center border-2 border-navy text-navy font-medium px-5 sm:px-6 h-12 sm:h-[52px] rounded-lg transition-all duration-200 hover:bg-navy/5 text-[15px];
   font-family: var(--font-body);
 }
 
@@ -160,12 +160,12 @@
 }
 
 @utility section-heading {
-  @apply font-bold text-charcoal text-[28px] md:text-[44px] leading-tight;
+  @apply font-bold text-charcoal text-2xl sm:text-[28px] md:text-[36px] lg:text-[44px] leading-tight;
   font-family: var(--font-display);
 }
 
 @utility hero-eyebrow {
-  @apply uppercase text-accent font-medium text-sm tracking-[4px];
+  @apply uppercase text-accent font-medium text-xs sm:text-sm tracking-[3px] sm:tracking-[4px];
   font-family: var(--font-body);
 }
 
