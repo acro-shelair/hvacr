@@ -1,0 +1,110 @@
+import type { Metadata } from "next";
+import { Mail, MapPin, Phone } from "lucide-react";
+import AnimatedSection from "@/components/AnimatedSection";
+import ContactForm from "./ContactForm";
+
+export const metadata: Metadata = {
+  title: "Contact HVACR Group | 1300 227 600 | Kelvin Grove QLD",
+  description:
+    "Get in touch with HVACR Group for refrigeration, air conditioning and cold room enquiries. Call 1300 227 600 or visit us in Kelvin Grove, Brisbane.",
+  alternates: { canonical: "/contact" },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: "HVACR Group",
+  telephone: "1300227600",
+  email: "info@hvacrgroup.com.au",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Kelvin Grove",
+    addressLocality: "Brisbane",
+    addressRegion: "QLD",
+    postalCode: "4059",
+    addressCountry: "AU",
+  },
+};
+
+export default function ContactPage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <section className="section-padding bg-navy diagonal-texture -mt-[72px] pt-[172px]">
+        <div className="container-main">
+          <h1 className="font-display font-extrabold text-primary-foreground text-[36px] md:text-[56px] leading-tight mb-4">
+            Contact Us
+          </h1>
+          <p className="text-primary-foreground/70 font-body text-lg max-w-[450px]">
+            We&apos;d love to hear from you. Reach out for a quote, enquiry, or to discuss your project.
+          </p>
+        </div>
+      </section>
+
+      <section className="section-padding bg-card">
+        <div className="container-main">
+          <div className="grid lg:grid-cols-12 gap-12">
+            <AnimatedSection className="lg:col-span-7">
+              <h2 className="section-heading mb-8">Get in Touch</h2>
+              <ContactForm />
+            </AnimatedSection>
+
+            <AnimatedSection className="lg:col-span-5" delay={0.15}>
+              <div className="bg-navy diagonal-texture rounded-2xl p-8 text-primary-foreground">
+                <h3 className="font-display font-bold text-xl mb-6">Contact Details</h3>
+                <address className="not-italic space-y-5">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-accent mt-0.5" />
+                    <div className="font-body text-sm text-primary-foreground/80">
+                      <p>Kelvin Grove, QLD 4059</p>
+                      <p>Australia</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-5 h-5 text-accent" />
+                    <a
+                      href="tel:1300227600"
+                      className="font-body text-sm text-primary-foreground/80 hover:text-accent transition-colors"
+                    >
+                      1300 227 600
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-accent" />
+                    <a
+                      href="mailto:info@hvacrgroup.com.au"
+                      className="font-body text-sm text-primary-foreground/80 hover:text-accent transition-colors"
+                    >
+                      info@hvacrgroup.com.au
+                    </a>
+                  </div>
+                </address>
+
+                <div className="mt-8 rounded-xl overflow-hidden">
+                  <iframe
+                    title="HVACR Group location map"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3539.8!2d153.012!3d-27.45!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjfCsDI3JzAwLjAiUyAxNTPCsDAwJzQzLjIiRQ!5e0!3m2!1sen!2sau!4v1234567890"
+                    width="100%"
+                    height="200"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+
+                <p className="text-primary-foreground/50 font-body text-xs mt-6">
+                  For brand-specific enquiries, please select the relevant option in the enquiry form.
+                </p>
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
