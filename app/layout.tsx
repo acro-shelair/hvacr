@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { DM_Sans, Syne } from "next/font/google";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import "./globals.css";
 
 const syne = Syne({
@@ -44,11 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${syne.variable} ${dmSans.variable}`}>
-      <body>
-        <Navbar />
-        <main className="pt-[72px]">{children}</main>
-        <Footer />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
