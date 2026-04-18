@@ -2,11 +2,51 @@ import type { Metadata } from "next";
 import { Handshake, Shield, Wrench } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  name: "About HVACR Group",
+  url: "https://hvacrgroup.com.au/about",
+  description:
+    "Learn about HVACR Group — Queensland's most trusted refrigeration and air conditioning holding company. Three specialist brands united since 1972.",
+  mainEntity: {
+    "@type": "Organization",
+    name: "HVACR Group",
+    foundingDate: "1972",
+    url: "https://hvacrgroup.com.au",
+    telephone: "+611300227600",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Kelvin Grove",
+      addressRegion: "QLD",
+      postalCode: "4059",
+      addressCountry: "AU",
+    },
+    areaServed: [
+      { "@type": "State", name: "Queensland" },
+      { "@type": "State", name: "New South Wales" },
+    ],
+    slogan: "Built on Experience. Focused on the Future.",
+    knowsAbout: ["Refrigeration", "Air Conditioning", "HVAC", "Cold Storage"],
+  },
+};
+
 export const metadata: Metadata = {
   title: "About HVACR Group | Trusted Trade Services Since 1972",
   description:
     "Learn about HVACR Group — Queensland's most trusted refrigeration and air conditioning holding company. Three specialist brands united since 1972.",
-  alternates: { canonical: "/about" },
+  alternates: { canonical: "https://hvacrgroup.com.au/about" },
+  openGraph: {
+    title: "About HVACR Group | Trusted Trade Services Since 1972",
+    description:
+      "Learn about HVACR Group — Queensland's most trusted refrigeration and air conditioning holding company. Three specialist brands united since 1972.",
+    url: "https://hvacrgroup.com.au/about",
+  },
+  twitter: {
+    title: "About HVACR Group | Trusted Trade Services Since 1972",
+    description:
+      "Learn about HVACR Group — Queensland's most trusted refrigeration and air conditioning holding company. Three specialist brands united since 1972.",
+  },
 };
 
 const milestones = [
@@ -17,18 +57,34 @@ const milestones = [
 ];
 
 const values = [
-  { icon: Wrench, title: "Quality Workmanship", desc: "Every project is delivered to the highest standard of trade excellence, backed by our 5-year guarantee." },
-  { icon: Shield, title: "Compliance Confidence", desc: "ISO-aligned systems, ARCtick and QBCC licensed — ensuring complete regulatory confidence." },
-  { icon: Handshake, title: "Long-Term Relationships", desc: "We don't do one-off jobs. We build partnerships that last decades." },
+  {
+    icon: Wrench,
+    title: "Quality Workmanship",
+    desc: "Every project is delivered to the highest standard of trade excellence, backed by our 5-year guarantee.",
+  },
+  {
+    icon: Shield,
+    title: "Compliance Confidence",
+    desc: "ISO-aligned systems, ARCtick and QBCC licensed — ensuring complete regulatory confidence.",
+  },
+  {
+    icon: Handshake,
+    title: "Long-Term Relationships",
+    desc: "We don't do one-off jobs. We build partnerships that last decades.",
+  },
 ];
 
 export default function AboutPage() {
   return (
     <>
-      <section className="relative min-h-[360px] sm:min-h-[400px] md:h-[50vh] md:min-h-[420px] flex items-center overflow-hidden -mt-[72px] pt-[88px] pb-10 md:py-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <section className="relative min-h-90 sm:min-h-100 md:h-[50vh] md:min-h-105 flex items-center overflow-hidden -mt-18 pt-22 pb-10 md:py-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/about-hero.jpg"
+          src="/about-hero.webp"
           alt="Commercial HVAC rooftop installation"
           className="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
@@ -44,7 +100,8 @@ export default function AboutPage() {
               Experience
               <span className="absolute bottom-0 left-0 w-full h-1 bg-accent" />
             </span>
-            .<br />Focused on the Future.
+            .<br />
+            Focused on the Future.
           </h1>
         </div>
       </section>
@@ -54,9 +111,16 @@ export default function AboutPage() {
           <AnimatedSection>
             <div className="grid grid-cols-2 md:flex md:flex-row md:items-center md:justify-between gap-6 sm:gap-8 md:gap-4">
               {milestones.map((m, i) => (
-                <div key={i} className="flex flex-col items-center text-center gap-1 sm:gap-2 md:flex-1 relative">
-                  <span className="stat-number text-[32px] sm:text-[40px] md:text-[56px] lg:text-[72px]">{m.year}</span>
-                  <span className="text-muted-foreground font-body text-xs sm:text-sm">{m.label}</span>
+                <div
+                  key={i}
+                  className="flex flex-col items-center text-center gap-1 sm:gap-2 md:flex-1 relative"
+                >
+                  <span className="stat-number text-[32px] sm:text-[40px] md:text-[56px] lg:text-[72px]">
+                    {m.year}
+                  </span>
+                  <span className="text-muted-foreground font-body text-xs sm:text-sm">
+                    {m.label}
+                  </span>
                   {i < milestones.length - 1 && (
                     <div className="hidden md:block absolute top-1/2 right-0 w-full h-px border-t border-dashed border-accent/40 -z-10 translate-x-1/2" />
                   )}
@@ -69,9 +133,11 @@ export default function AboutPage() {
 
       <section className="section-padding bg-surface-alt">
         <div className="container-main">
-          <AnimatedSection className="max-w-[800px] mx-auto text-center">
+          <AnimatedSection className="max-w-200 mx-auto text-center">
             <blockquote className="font-display font-bold text-navy text-lg sm:text-xl md:text-2xl lg:text-[28px] leading-relaxed">
-              &ldquo;Our growth strategy is simple — acquire, strengthen, and grow specialist trade service businesses while maintaining the values that built them.&rdquo;
+              &ldquo;Our growth strategy is simple — acquire, strengthen, and
+              grow specialist trade service businesses while maintaining the
+              values that built them.&rdquo;
             </blockquote>
           </AnimatedSection>
         </div>
@@ -80,15 +146,21 @@ export default function AboutPage() {
       <section className="section-padding bg-navy diagonal-texture">
         <div className="container-main">
           <AnimatedSection className="text-center mb-8 sm:mb-12">
-            <h2 className="font-display font-bold text-primary-foreground text-2xl sm:text-[28px] md:text-[36px] lg:text-[44px]">Our Values</h2>
+            <h2 className="font-display font-bold text-primary-foreground text-2xl sm:text-[28px] md:text-[36px] lg:text-[44px]">
+              Our Values
+            </h2>
           </AnimatedSection>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {values.map((v, i) => (
               <AnimatedSection key={v.title} delay={i * 0.1}>
                 <div className="card-elevated text-center">
                   <v.icon className="w-10 h-10 text-accent mx-auto mb-4" />
-                  <h3 className="font-display font-bold text-charcoal text-lg mb-2">{v.title}</h3>
-                  <p className="text-muted-foreground font-body text-sm leading-relaxed">{v.desc}</p>
+                  <h3 className="font-display font-bold text-charcoal text-lg mb-2">
+                    {v.title}
+                  </h3>
+                  <p className="text-muted-foreground font-body text-sm leading-relaxed">
+                    {v.desc}
+                  </p>
                 </div>
               </AnimatedSection>
             ))}

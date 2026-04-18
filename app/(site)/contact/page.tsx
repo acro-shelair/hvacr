@@ -8,15 +8,31 @@ export const metadata: Metadata = {
   title: "Contact HVACR Group | 1300 227 600 | Kelvin Grove QLD",
   description:
     "Get in touch with HVACR Group for refrigeration, air conditioning and cold room enquiries. Call 1300 227 600 or visit us in Kelvin Grove, Brisbane.",
-  alternates: { canonical: "/contact" },
+  alternates: { canonical: "https://hvacrgroup.com.au/contact" },
+  openGraph: {
+    title: "Contact HVACR Group | 1300 227 600 | Kelvin Grove QLD",
+    description:
+      "Get in touch with HVACR Group for refrigeration, air conditioning and cold room enquiries. Call 1300 227 600 or visit us in Kelvin Grove, Brisbane.",
+    url: "https://hvacrgroup.com.au/contact",
+  },
+  twitter: {
+    title: "Contact HVACR Group | 1300 227 600 | Kelvin Grove QLD",
+    description:
+      "Get in touch with HVACR Group for refrigeration, air conditioning and cold room enquiries. Call 1300 227 600 or visit us in Kelvin Grove, Brisbane.",
+  },
 };
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   name: "HVACR Group",
-  telephone: "1300227600",
+  url: "https://hvacrgroup.com.au",
+  logo: "https://hvacrgroup.com.au/hvacr-logo-web.webp",
+  image: "https://hvacrgroup.com.au/og-image.jpg",
+  telephone: "+611300227600",
   email: "info@hvacrgroup.com.au",
+  priceRange: "$$",
+  openingHours: "Mo-Fr 07:00-17:00",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Kelvin Grove",
@@ -25,6 +41,21 @@ const jsonLd = {
     postalCode: "4059",
     addressCountry: "AU",
   },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: -27.45,
+    longitude: 153.012,
+  },
+  areaServed: [
+    { "@type": "State", name: "Queensland" },
+    { "@type": "State", name: "New South Wales" },
+  ],
+  serviceType: [
+    "Commercial Refrigeration",
+    "Industrial Air Conditioning",
+    "Cold Room Installation",
+    "HVAC Maintenance",
+  ],
 };
 
 export default async function ContactPage() {

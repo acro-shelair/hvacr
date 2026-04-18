@@ -6,11 +6,67 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { createClient } from "@/lib/supabase/server";
 import { getIcon } from "@/lib/icons";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "HVACR Group Brand Portfolio",
+  description:
+    "Three specialist trade service brands united under HVACR Group.",
+  url: "https://hvacrgroup.com.au/brands",
+  numberOfItems: 3,
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      item: {
+        "@type": "Organization",
+        name: "Acro Refrigeration",
+        description:
+          "Queensland's leading commercial and industrial refrigeration specialist, established 1972.",
+        parentOrganization: { "@type": "Organization", name: "HVACR Group" },
+      },
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      item: {
+        "@type": "Organization",
+        name: "Shelair",
+        description:
+          "Commercial and industrial air conditioning specialist serving QLD and NSW.",
+        parentOrganization: { "@type": "Organization", name: "HVACR Group" },
+      },
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      item: {
+        "@type": "Organization",
+        name: "Koolacube",
+        description:
+          "Relocatable and modular cold room solutions for commercial clients.",
+        parentOrganization: { "@type": "Organization", name: "HVACR Group" },
+      },
+    },
+  ],
+};
+
 export const metadata: Metadata = {
   title: "Our Brands | Acro Refrigeration, Shelair & Koolacube",
   description:
     "Discover HVACR Group's three specialist brands: Acro Refrigeration, Shelair air conditioning, and Koolacube relocatable cold rooms. Trusted across QLD and NSW.",
-  alternates: { canonical: "/brands" },
+  alternates: { canonical: "https://hvacrgroup.com.au/brands" },
+  openGraph: {
+    title: "Our Brands | Acro Refrigeration, Shelair & Koolacube",
+    description:
+      "Discover HVACR Group's three specialist brands: Acro Refrigeration, Shelair air conditioning, and Koolacube relocatable cold rooms. Trusted across QLD and NSW.",
+    url: "https://hvacrgroup.com.au/brands",
+  },
+  twitter: {
+    title: "Our Brands | Acro Refrigeration, Shelair & Koolacube",
+    description:
+      "Discover HVACR Group's three specialist brands: Acro Refrigeration, Shelair air conditioning, and Koolacube relocatable cold rooms. Trusted across QLD and NSW.",
+  },
 };
 
 export default async function BrandsPage() {
@@ -25,6 +81,10 @@ export default async function BrandsPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="bg-navy diagonal-texture -mt-18 pt-26 sm:pt-32 md:pt-43 pb-14 sm:pb-16 md:pb-20 lg:pb-25">
         <div className="container-main">
           <h1 className="font-display font-extrabold text-primary-foreground text-[32px] sm:text-[40px] md:text-[56px] leading-tight mb-4">

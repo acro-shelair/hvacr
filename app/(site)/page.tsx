@@ -2,16 +2,32 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle, Phone } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
+import CredentialsStrip from "@/components/home/CredentialsStrip";
 import FaqAccordion from "@/components/FaqAccordion";
 import { createClient } from "@/lib/supabase/server";
 import { getIcon } from "@/lib/icons";
 
 export const metadata: Metadata = {
-  title:
-    "HVACR Group | Refrigeration & Air Conditioning Experts | Brisbane QLD",
+  title: {
+    absolute:
+      "HVACR Group | Refrigeration & Air Conditioning Experts | Brisbane QLD",
+  },
   description:
     "Queensland's most trusted refrigeration and climate control group. Three specialist brands — Acro Refrigeration, Shelair & Koolacube — serving commercial and industrial clients since 1972.",
-  alternates: { canonical: "/" },
+  alternates: { canonical: "https://hvacrgroup.com.au" },
+  openGraph: {
+    title:
+      "HVACR Group | Refrigeration & Air Conditioning Experts | Brisbane QLD",
+    description:
+      "Queensland's most trusted refrigeration and climate control group. Three specialist brands — Acro Refrigeration, Shelair & Koolacube — serving commercial and industrial clients since 1972.",
+    url: "https://hvacrgroup.com.au",
+  },
+  twitter: {
+    title:
+      "HVACR Group | Refrigeration & Air Conditioning Experts | Brisbane QLD",
+    description:
+      "Queensland's most trusted refrigeration and climate control group. Three specialist brands — Acro Refrigeration, Shelair & Koolacube — serving commercial and industrial clients since 1972.",
+  },
 };
 
 const stats = [
@@ -70,8 +86,10 @@ const jsonLd = {
   "@type": "Organization",
   name: "HVACR Group",
   url: "https://hvacrgroup.com.au",
-  logo: "https://hvacrgroup.com.au/logo.png",
-  telephone: "1300227600",
+  logo: "https://hvacrgroup.com.au/hvacr-logo-web.webp",
+  telephone: "+611300227600",
+  email: "info@hvacrgroup.com.au",
+  foundingDate: "1972",
   address: {
     "@type": "PostalAddress",
     addressLocality: "Kelvin Grove",
@@ -79,8 +97,24 @@ const jsonLd = {
     postalCode: "4059",
     addressCountry: "AU",
   },
+  areaServed: [
+    { "@type": "State", name: "Queensland" },
+    { "@type": "State", name: "New South Wales" },
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+611300227600",
+    contactType: "customer service",
+    areaServed: "AU",
+    availableLanguage: "English",
+  },
   description:
-    "Queensland's most trusted refrigeration and air conditioning group.",
+    "Queensland's most trusted refrigeration and air conditioning group. Three specialist brands — Acro Refrigeration, Shelair & Koolacube — serving commercial and industrial clients since 1972.",
+  subOrganization: [
+    { "@type": "Organization", name: "Acro Refrigeration" },
+    { "@type": "Organization", name: "Shelair" },
+    { "@type": "Organization", name: "Koolacube" },
+  ],
 };
 
 export default async function HomePage() {
@@ -120,7 +154,7 @@ export default async function HomePage() {
       <section className="relative flex flex-col min-h-[calc(100svh-72px)] lg:min-h-screen overflow-hidden -mt-18 pt-18">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/hero-industrial.jpg"
+          src="/hero-industrial.webp"
           alt="Industrial cold storage refrigeration facility"
           className="absolute inset-0 w-full h-full object-cover"
           width={1920}
@@ -266,6 +300,8 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      <CredentialsStrip />
 
       {/* WHY HVACR */}
       <section className="section-padding bg-surface">

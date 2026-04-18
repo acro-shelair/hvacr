@@ -166,7 +166,7 @@ export default function AdminSidebar({
         </button>
         <div className="flex items-center gap-2">
           <Image
-            src="/hvacr-logo-tab.png"
+            src="/hvacr-logo-tab.webp"
             alt="HVACR Group"
             width={28}
             height={28}
@@ -196,7 +196,7 @@ export default function AdminSidebar({
         <div className="px-5 py-5 border-b border-zinc-800">
           <div className="flex items-center gap-3">
             <Image
-              src="/hvacr-logo-tab.png"
+              src="/hvacr-logo-tab.webp"
               alt="HVACR Group"
               width={36}
               height={36}

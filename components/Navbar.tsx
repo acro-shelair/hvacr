@@ -41,7 +41,7 @@ export default function Navbar() {
         <div className="container-main flex items-center justify-between h-[72px] gap-3">
           <Link href="/" aria-label="HVACR Group home" className="flex items-center flex-shrink-0">
             <Image
-              src="/hvacr-logo-web.png"
+              src="/hvacr-logo-web.webp"
               alt="HVACR Pty Ltd"
               width={330}
               height={90}

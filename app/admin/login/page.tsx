@@ -39,7 +39,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-6">
           <Image
-            src="/hvacr-logo-web.png"
+            src="/hvacr-logo-web.webp"
             alt="HVACR Group"
             width={160}
             height={40}

@@ -4,11 +4,52 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { createClient } from "@/lib/supabase/server";
 import ApplyButton from "./ApplyButton";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "EmployerAggregateRating",
+  itemReviewed: {
+    "@type": "Organization",
+    name: "HVACR Group",
+    url: "https://hvacrgroup.com.au",
+    sameAs: "https://hvacrgroup.com.au/about",
+  },
+  hiringOrganization: {
+    "@type": "Organization",
+    name: "HVACR Group",
+    url: "https://hvacrgroup.com.au",
+    logo: "https://hvacrgroup.com.au/hvacr-logo-web.webp",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Kelvin Grove",
+      addressRegion: "QLD",
+      postalCode: "4059",
+      addressCountry: "AU",
+    },
+  },
+  occupationalCategory: "Refrigeration Mechanic, Air Conditioning Technician, HVAC Engineer",
+  jobLocationType: "TELECOMMUTE",
+  applicantLocationRequirements: {
+    "@type": "Country",
+    name: "Australia",
+  },
+};
+
 export const metadata: Metadata = {
   title: "Careers at HVACR Group | HVAC Jobs in QLD & NSW",
   description:
     "Join HVACR Group — one of Queensland's leading refrigeration and air conditioning employers. Explore career opportunities across Acro Refrigeration, Shelair and Koolacube.",
-  alternates: { canonical: "/careers" },
+  alternates: { canonical: "https://hvacrgroup.com.au/careers" },
+  openGraph: {
+    title: "Careers at HVACR Group | HVAC Jobs in QLD & NSW",
+    description:
+      "Join HVACR Group — one of Queensland's leading refrigeration and air conditioning employers. Explore career opportunities across Acro Refrigeration, Shelair and Koolacube.",
+    url: "https://hvacrgroup.com.au/careers",
+  },
+  twitter: {
+    title: "Careers at HVACR Group | HVAC Jobs in QLD & NSW",
+    description:
+      "Join HVACR Group — one of Queensland's leading refrigeration and air conditioning employers. Explore career opportunities across Acro Refrigeration, Shelair and Koolacube.",
+  },
 };
 
 const reasons = [
@@ -41,6 +82,10 @@ export default async function CareersPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="bg-navy diagonal-texture -mt-18 pt-26 sm:pt-32 md:pt-43 pb-14 sm:pb-16 md:pb-20 lg:pb-25">
         <div className="container-main">
           <h1 className="font-display font-extrabold text-primary-foreground text-[32px] sm:text-[40px] md:text-[56px] leading-tight mb-4">

@@ -24,15 +24,42 @@ export const metadata: Metadata = {
   },
   description:
     "Queensland's most trusted refrigeration and climate control group. Three specialist brands — Acro Refrigeration, Shelair & Koolacube — serving commercial and industrial clients since 1972.",
+  keywords: [
+    "HVACR",
+    "refrigeration Brisbane",
+    "air conditioning Queensland",
+    "commercial refrigeration",
+    "industrial HVAC",
+    "cold room installation",
+    "Acro Refrigeration",
+    "Shelair",
+    "Koolacube",
+    "HVAC QLD",
+    "commercial air conditioning NSW",
+  ],
+  authors: [{ name: "HVACR Group", url: "https://hvacrgroup.com.au" }],
+  creator: "HVACR Group",
   openGraph: {
     type: "website",
     siteName: "HVACR Group",
-    images: ["/og-image.jpg"],
+    locale: "en_AU",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "HVACR Group — Queensland's most trusted refrigeration and climate control group",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    site: "@HVACRGroup",
   },
   robots: { index: true, follow: true },
+  alternates: {
+    canonical: "https://hvacrgroup.com.au",
+  },
 };
 
 export default function RootLayout({

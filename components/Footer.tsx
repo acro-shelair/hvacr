@@ -17,7 +17,7 @@ export default function Footer() {
           <div className="sm:col-span-2 md:col-span-1">
             <div className="bg-white rounded-md inline-block p-3 mb-4">
               <Image
-                src="/hvacr-logo-web.png"
+                src="/hvacr-logo-web.webp"
                 alt="HVACR Pty Ltd"
                 width={330}
                 height={90}
