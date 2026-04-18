@@ -11,7 +11,7 @@ export interface Industry {
   name: string;
   slug: string;
   description: string;
-  image_url: string | null;
+  icon_name: string;
   display_order: number;
   is_published: boolean;
   created_at: string;

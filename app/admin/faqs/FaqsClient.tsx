@@ -61,7 +61,7 @@ function Modal({
 
 // ─── Add / Edit dialog ────────────────────────────────────────────────────────
 
-function FaqDialog({ faq, onSuccess }: { faq?: Faq; onSuccess: () => void }) {
+function FaqDialog({ faq, onSuccess }: { faq?: Faq; onSuccess: (newFaq?: Faq) => void }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPublished, setIsPublished] = useState(faq?.is_published ?? true);
@@ -86,13 +86,16 @@ function FaqDialog({ faq, onSuccess }: { faq?: Faq; onSuccess: () => void }) {
       if (isEdit) {
         const result = await updateFaq(faq.id, { ...data, is_published: isPublished });
         if (result?.error) throw new Error(result.error);
+        reset();
+        setOpen(false);
+        onSuccess();
       } else {
         const result = await createFaq(data.question, data.answer);
         if (result?.error) throw new Error(result.error);
+        reset();
+        setOpen(false);
+        onSuccess(result.faq as Faq);
       }
-      reset();
-      setOpen(false);
-      onSuccess();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed.");
     }
@@ -184,7 +187,10 @@ export default function FaqsClient({ initialFaqs }: { initialFaqs: Faq[] }) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
 
-  const refresh = () => router.refresh();
+  const refresh = (newFaq?: Faq) => {
+    if (newFaq) setFaqs((prev) => [...prev, newFaq]);
+    router.refresh();
+  };
 
   async function handleDelete(id: string) {
     setLoadingId(id);

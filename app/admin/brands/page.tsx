@@ -11,7 +11,9 @@ export type Brand = {
   slug: string;
   specialty: string;
   description: string;
+  services: string[];
   logo_url: string | null;
+  icon: string | null;
   website_url: string | null;
   display_order: number;
   is_published: boolean;
@@ -23,7 +25,7 @@ export default async function BrandsPage() {
   const { data } = await supabase
     .from("brands")
     .select(
-      "id, name, slug, specialty, description, logo_url, website_url, display_order, is_published, created_at"
+      "id, name, slug, specialty, description, services, logo_url, icon, website_url, display_order, is_published, created_at"
     )
     .order("display_order", { ascending: true });
 

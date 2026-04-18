@@ -1,6 +1,9 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export type ContactFormState = {
   success?: boolean;
@@ -29,6 +32,17 @@ export async function submitContactForm(
 
   if (error) {
     return { error: "Failed to send your message. Please try again." };
+  }
+
+  const { error: emailError } = await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL!.trim(),
+    to: process.env.CONTACT_NOTIFY_EMAIL!.trim(),
+    subject: `New Enquiry: ${enquiry_type} from ${name}`,
+    text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone ?? "—"}\nType: ${enquiry_type}\n\n${message}`,
+  });
+
+  if (emailError) {
+    console.error("[Resend] Failed to send email:", emailError);
   }
 
   return { success: true };

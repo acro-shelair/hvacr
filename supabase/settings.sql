@@ -23,17 +23,8 @@ create policy "settings_public_read" on public.site_settings
 -- Only admins can write
 drop policy if exists "settings_admin_write" on public.site_settings;
 create policy "settings_admin_write" on public.site_settings
-  for all using (
-    exists (
-      select 1 from public.user_profiles p
-      where p.user_id = auth.uid() and p.role = 'admin'
-    )
-  ) with check (
-    exists (
-      select 1 from public.user_profiles p
-      where p.user_id = auth.uid() and p.role = 'admin'
-    )
-  );
+  for all using (public.is_admin())
+  with check (public.is_admin());
 
 -- Seed default rows (safe to re-run)
 insert into public.site_settings (key, value) values

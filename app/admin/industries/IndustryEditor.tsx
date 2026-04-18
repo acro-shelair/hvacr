@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Upload, X } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { createIndustry, updateIndustry } from "./actions";
+import { ICON_OPTIONS, getIcon } from "./icons";
 import type { Industry } from "./page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,52 +26,21 @@ function slugify(str: string) {
 export default function IndustryEditor({ industry }: Props) {
   const router = useRouter();
   const isEdit = !!industry;
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(industry?.name ?? "");
   const [slug, setSlug] = useState(industry?.slug ?? "");
   const [description, setDescription] = useState(industry?.description ?? "");
   const [isPublished, setIsPublished] = useState(industry?.is_published ?? true);
-
-  const [imageUrl, setImageUrl] = useState<string | null>(industry?.image_url ?? null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(industry?.image_url ?? null);
+  const [iconName, setIconName] = useState(industry?.icon_name ?? "Building2");
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const PreviewIcon = getIcon(iconName);
+
   function handleNameChange(val: string) {
     setName(val);
     if (!isEdit) setSlug(slugify(val));
-  }
-
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
-  }
-
-  function clearImage() {
-    setImageFile(null);
-    setImagePreview(null);
-    setImageUrl(null);
-    if (fileRef.current) fileRef.current.value = "";
-  }
-
-  async function uploadImage(file: File): Promise<string | null> {
-    const supabase = createClient();
-    const ext = file.name.split(".").pop();
-    const path = `${slugify(name)}-${Date.now()}.${ext}`;
-
-    const { error } = await supabase.storage
-      .from("industry-images")
-      .upload(path, file, { upsert: true });
-
-    if (error) return null;
-
-    const { data } = supabase.storage.from("industry-images").getPublicUrl(path);
-    return data.publicUrl;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -83,23 +50,11 @@ export default function IndustryEditor({ industry }: Props) {
     setSaving(true);
     setError(null);
 
-    let finalImageUrl = imageUrl;
-
-    if (imageFile) {
-      const uploaded = await uploadImage(imageFile);
-      if (!uploaded) {
-        setError("Image upload failed. Please try again.");
-        setSaving(false);
-        return;
-      }
-      finalImageUrl = uploaded;
-    }
-
     const fields = {
       name: name.trim(),
       slug: slug.trim(),
       description: description.trim(),
-      image_url: finalImageUrl,
+      icon_name: iconName,
       is_published: isPublished,
     };
 
@@ -146,56 +101,34 @@ export default function IndustryEditor({ industry }: Props) {
           Industry Details
         </h2>
 
-        {/* Image */}
-        <div className="space-y-1.5">
-          <Label>Image</Label>
-          {imagePreview ? (
-            <div className="relative inline-block">
-              <div className="w-32 h-32 rounded-xl bg-secondary border border-border overflow-hidden flex items-center justify-center">
-                <Image
-                  src={imagePreview}
-                  alt="Preview"
-                  width={128}
-                  height={128}
-                  className="object-cover w-full h-full"
-                  unoptimized={imagePreview.startsWith("blob:")}
-                />
-              </div>
-              <button
-                type="button"
-                onClick={clearImage}
-                className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-secondary hover:bg-destructive text-foreground flex items-center justify-center transition-colors border border-border"
-                title="Remove image"
-              >
-                <X className="w-3 h-3" />
-              </button>
+        {/* Icon picker */}
+        <div className="space-y-3">
+          <Label>Icon</Label>
+          <div className="flex items-center gap-4 mb-2">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <PreviewIcon className="w-6 h-6 text-primary" />
             </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-dashed border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground text-sm transition-colors"
-            >
-              <Upload className="w-4 h-4" />
-              Upload image
-            </button>
-          )}
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-          {imagePreview && !imageFile && (
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              className="mt-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Replace image
-            </button>
-          )}
+            <span className="text-sm text-muted-foreground">
+              Selected: <span className="font-medium text-foreground">{iconName}</span>
+            </span>
+          </div>
+          <div className="grid grid-cols-8 gap-2">
+            {ICON_OPTIONS.map(({ name: n, icon: Icon }) => (
+              <button
+                key={n}
+                type="button"
+                title={n}
+                onClick={() => setIconName(n)}
+                className={`aspect-square rounded-lg flex items-center justify-center transition-colors border ${
+                  iconName === n
+                    ? "bg-primary text-white border-primary"
+                    : "bg-secondary text-muted-foreground border-transparent hover:border-border hover:text-foreground"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-5">

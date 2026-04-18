@@ -3,11 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import * as Icons from "lucide-react";
 import { GripVertical, Pencil, Trash2, Package, Eye, EyeOff } from "lucide-react";
 import { deleteBrand, reorderBrands, updateBrand } from "./actions";
 import type { Brand } from "./page";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+
+function DynamicIcon({ name, className }: { name: string; className?: string }) {
+  const Ic = (Icons as Record<string, unknown>)[name] as React.ComponentType<{ className?: string }> | undefined;
+  if (!Ic) return null;
+  return <Ic className={className} />;
+}
 
 export default function BrandsClient({ brands: initial }: { brands: Brand[] }) {
   const router = useRouter();
@@ -115,6 +122,8 @@ export default function BrandsClient({ brands: initial }: { brands: Brand[] }) {
                   height={40}
                   className="object-contain w-full h-full"
                 />
+              ) : brand.icon ? (
+                <DynamicIcon name={brand.icon} className="w-5 h-5 text-primary" />
               ) : (
                 <span className="text-primary font-bold text-sm">{brand.name[0]}</span>
               )}

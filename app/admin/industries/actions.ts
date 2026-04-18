@@ -8,7 +8,7 @@ type IndustryFields = {
   name?: string;
   slug?: string;
   description?: string;
-  image_url?: string | null;
+  icon_name?: string;
   is_published?: boolean;
 };
 

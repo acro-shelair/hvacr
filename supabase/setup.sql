@@ -29,6 +29,15 @@ create trigger user_profiles_touch
 before update on public.user_profiles
 for each row execute function public.touch_updated_at();
 
+-- Helper to check admin role without triggering RLS recursion
+create or replace function public.is_admin()
+returns boolean language sql security definer stable as $$
+  select exists (
+    select 1 from public.user_profiles
+    where user_id = auth.uid() and role = 'admin'
+  );
+$$;
+
 -- RLS: users can read their own profile; only admins can read/modify all
 alter table public.user_profiles enable row level security;
 
@@ -38,26 +47,12 @@ create policy "profiles_self_read" on public.user_profiles
 
 drop policy if exists "profiles_admin_read" on public.user_profiles;
 create policy "profiles_admin_read" on public.user_profiles
-  for select using (
-    exists (
-      select 1 from public.user_profiles p
-      where p.user_id = auth.uid() and p.role = 'admin'
-    )
-  );
+  for select using (public.is_admin());
 
 drop policy if exists "profiles_admin_write" on public.user_profiles;
 create policy "profiles_admin_write" on public.user_profiles
-  for all using (
-    exists (
-      select 1 from public.user_profiles p
-      where p.user_id = auth.uid() and p.role = 'admin'
-    )
-  ) with check (
-    exists (
-      select 1 from public.user_profiles p
-      where p.user_id = auth.uid() and p.role = 'admin'
-    )
-  );
+  for all using (public.is_admin())
+  with check (public.is_admin());
 
 -- ============================================================
 -- activity_logs: append-only audit trail for admin actions

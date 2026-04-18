@@ -58,13 +58,14 @@ const brands = [
 export default function BrandsPage() {
   return (
     <>
-      <section className="bg-navy diagonal-texture -mt-[72px] pt-[104px] sm:pt-[128px] md:pt-[172px] pb-14 sm:pb-16 md:pb-20 lg:pb-[100px]">
+      <section className="bg-navy diagonal-texture -mt-18 pt-26 sm:pt-32 md:pt-43 pb-14 sm:pb-16 md:pb-20 lg:pb-25">
         <div className="container-main">
           <h1 className="font-display font-extrabold text-primary-foreground text-[32px] sm:text-[40px] md:text-[56px] leading-tight mb-4">
             Our Brand Portfolio
           </h1>
-          <p className="text-primary-foreground/70 font-body text-base sm:text-lg max-w-[550px]">
-            Three specialist brands, each a leader in their field — united by HVACR Group&apos;s commitment to excellence.
+          <p className="text-primary-foreground/70 font-body text-base sm:text-lg max-w-137.5">
+            Three specialist brands, each a leader in their field — united by
+            HVACR Group&apos;s commitment to excellence.
           </p>
         </div>
       </section>
@@ -74,32 +75,58 @@ export default function BrandsPage() {
         return (
           <section
             key={brand.name}
-            className={`section-padding ${i % 2 === 0 ? "bg-card" : "bg-surface-alt"}`}
+            className={`section-padding ${
+              i % 2 === 0 ? "bg-card" : "bg-surface-alt"
+            }`}
           >
             <div className="container-main">
               <AnimatedSection>
                 <div className="grid lg:grid-cols-12 gap-8 md:gap-12 items-center">
-                  <div className={`order-2 ${reversed ? "lg:order-2 lg:col-start-6 lg:col-span-7" : "lg:order-1 lg:col-span-7"}`}>
+                  <div
+                    className={`order-2 ${
+                      reversed
+                        ? "lg:order-2 lg:col-start-6 lg:col-span-7"
+                        : "lg:order-1 lg:col-span-7"
+                    }`}
+                  >
                     <div className="flex items-center gap-3 mb-3 sm:mb-4">
-                      <brand.icon className="w-7 h-7 sm:w-8 sm:h-8 text-accent flex-shrink-0" />
-                      <span className="font-body text-accent font-medium text-xs sm:text-sm uppercase tracking-wider">{brand.specialty}</span>
+                      <brand.icon className="w-7 h-7 sm:w-8 sm:h-8 text-accent shrink-0" />
+                      <span className="font-body text-accent font-medium text-xs sm:text-sm uppercase tracking-wider">
+                        {brand.specialty}
+                      </span>
                     </div>
-                    <h2 className="section-heading mb-3 sm:mb-4">{brand.name}</h2>
-                    <p className="text-muted-foreground font-body text-base sm:text-[17px] leading-[1.7] mb-5 sm:mb-6">{brand.description}</p>
+                    <h2 className="section-heading mb-3 sm:mb-4">
+                      {brand.name}
+                    </h2>
+                    <p className="text-muted-foreground font-body text-base sm:text-[17px] leading-[1.7] mb-5 sm:mb-6">
+                      {brand.description}
+                    </p>
                     <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
                       {brand.services.map((s) => (
-                        <li key={s} className="flex items-start gap-2 font-body text-foreground text-sm sm:text-[15px]">
-                          <CheckCircle className="w-4 h-4 text-accent mt-1 flex-shrink-0" />
+                        <li
+                          key={s}
+                          className="flex items-start gap-2 font-body text-foreground text-sm sm:text-[15px]"
+                        >
+                          <CheckCircle className="w-4 h-4 text-accent mt-1 shrink-0" />
                           {s}
                         </li>
                       ))}
                     </ul>
-                    <Link href="/contact" className="btn-primary w-full sm:w-auto">
+                    <Link
+                      href="/contact"
+                      className="btn-primary w-full sm:w-auto"
+                    >
                       Enquire About {brand.name.split(" ")[0]} →
                     </Link>
                   </div>
-                  <div className={`order-1 ${reversed ? "lg:order-1 lg:col-start-1 lg:col-span-5 lg:row-start-1" : "lg:order-2 lg:col-span-5"}`}>
-                    <div className="bg-navy/5 rounded-2xl aspect-[4/3] flex items-center justify-center">
+                  <div
+                    className={`order-1 ${
+                      reversed
+                        ? "lg:order-1 lg:col-start-1 lg:col-span-5 lg:row-start-1"
+                        : "lg:order-2 lg:col-span-5"
+                    }`}
+                  >
+                    <div className="bg-navy/5 rounded-2xl aspect-4/3 flex items-center justify-center">
                       <brand.icon className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 text-accent/30" />
                     </div>
                   </div>

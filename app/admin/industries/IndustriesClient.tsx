@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { GripVertical, Pencil, Trash2, Building2, Eye, EyeOff } from "lucide-react";
+import { getIcon } from "./icons";
 import { deleteIndustry, reorderIndustries, updateIndustry } from "./actions";
 import type { Industry } from "./page";
 import Link from "next/link";
@@ -106,18 +106,8 @@ export default function IndustriesClient({ initialIndustries }: { initialIndustr
               <GripVertical className="w-4 h-4" />
             </div>
 
-            <div className="shrink-0 w-10 h-10 rounded-lg bg-primary/10 overflow-hidden flex items-center justify-center">
-              {industry.image_url ? (
-                <Image
-                  src={industry.image_url}
-                  alt={industry.name}
-                  width={40}
-                  height={40}
-                  className="object-cover w-full h-full"
-                />
-              ) : (
-                <Building2 className="w-5 h-5 text-primary" />
-              )}
+            <div className="shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              {(() => { const Icon = getIcon(industry.icon_name); return <Icon className="w-5 h-5 text-primary" />; })()}
             </div>
 
             <div className="flex-1 min-w-0">

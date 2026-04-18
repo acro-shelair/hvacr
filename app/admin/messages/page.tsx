@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import MessagesClient from "./MessagesClient";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ export default async function MessagesPage({
   const enquiryType = params.enquiry_type ?? "all";
   const q = params.q ?? "";
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 

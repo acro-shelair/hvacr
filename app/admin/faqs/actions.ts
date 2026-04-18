@@ -19,14 +19,14 @@ export async function createFaq(question: string, answer: string) {
   const { data, error } = await supabase
     .from("faqs")
     .insert({ question, answer, display_order })
-    .select("id")
+    .select("id, question, answer, display_order, is_published, created_at")
     .single();
 
   if (error) return { error: error.message };
 
   await logActivity("create", "faqs", `Created FAQ: ${question.slice(0, 60)}`, data.id);
   revalidatePath("/admin/faqs");
-  return { id: data.id };
+  return { faq: data };
 }
 
 export async function updateFaq(

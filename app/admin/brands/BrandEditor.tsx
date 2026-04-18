@@ -3,9 +3,9 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Upload, X } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import { createBrand, updateBrand } from "./actions";
+import * as Icons from "lucide-react";
+import { Upload, X, Plus, Trash2, Smile } from "lucide-react";
+import { createBrand, updateBrand, uploadBrandLogo } from "./actions";
 import type { Brand } from "./page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,24 @@ import { Textarea } from "@/components/ui/textarea";
 type Props = {
   brand?: Brand;
 };
+
+const ICON_OPTIONS = [
+  "Wind", "Thermometer", "Snowflake", "Flame", "Droplets", "Zap",
+  "Sun", "Cloud", "CloudSnow", "CloudRain", "Wrench", "Settings",
+  "Settings2", "Package", "Box", "Shield", "ShieldCheck", "Star",
+  "Award", "Building", "Building2", "Factory", "Gauge", "Activity",
+  "BarChart2", "TrendingUp", "Globe", "Layers", "Filter", "Timer",
+  "Battery", "Plug", "Lightbulb", "Home", "Truck", "Tag", "Users",
+  "Cpu", "RefreshCw", "CheckCircle", "Bolt", "Radio", "Store",
+  "Hammer", "Drill", "PenTool", "Tool", "CircuitBoard", "Power",
+  "MonitorCog", "Webhook", "Server", "HardHat",
+] as const;
+
+function DynamicIcon({ name, className }: { name: string; className?: string }) {
+  const Ic = (Icons as Record<string, unknown>)[name] as React.ComponentType<{ className?: string }> | undefined;
+  if (!Ic) return null;
+  return <Ic className={className} />;
+}
 
 function slugify(str: string) {
   return str
@@ -32,8 +50,12 @@ export default function BrandEditor({ brand }: Props) {
   const [name, setName] = useState(brand?.name ?? "");
   const [specialty, setSpecialty] = useState(brand?.specialty ?? "");
   const [description, setDescription] = useState(brand?.description ?? "");
+  const [services, setServices] = useState<string[]>(brand?.services ?? []);
   const [websiteUrl, setWebsiteUrl] = useState(brand?.website_url ?? "");
   const [isPublished, setIsPublished] = useState(brand?.is_published ?? true);
+  const [icon, setIcon] = useState<string | null>(brand?.icon ?? null);
+  const [showIconPicker, setShowIconPicker] = useState(false);
+  const [iconSearch, setIconSearch] = useState("");
 
   const [logoUrl, setLogoUrl] = useState<string | null>(brand?.logo_url ?? null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -41,6 +63,10 @@ export default function BrandEditor({ brand }: Props) {
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const filteredIcons = ICON_OPTIONS.filter((n) =>
+    n.toLowerCase().includes(iconSearch.toLowerCase())
+  );
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -56,19 +82,34 @@ export default function BrandEditor({ brand }: Props) {
     if (fileRef.current) fileRef.current.value = "";
   }
 
-  async function uploadLogo(file: File): Promise<string | null> {
-    const supabase = createClient();
-    const ext = file.name.split(".").pop();
-    const path = `${slugify(name)}-${Date.now()}.${ext}`;
+  async function toWebP(file: File): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext("2d")!.drawImage(img, 0, 0);
+        canvas.toBlob(
+          (blob) => (blob ? resolve(blob) : reject(new Error("Conversion failed"))),
+          "image/webp",
+          0.9
+        );
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
 
-    const { error } = await supabase.storage
-      .from("brand-logos")
-      .upload(path, file, { upsert: true });
+  async function uploadLogo(file: File): Promise<{ url: string } | { error: string }> {
+    const webpBlob = await toWebP(file).catch(() => null);
+    if (!webpBlob) return { error: "WebP conversion failed" };
 
-    if (error) return null;
+    const formData = new FormData();
+    formData.append("file", webpBlob);
+    formData.append("path", `${slugify(name)}-${Date.now()}.webp`);
 
-    const { data } = supabase.storage.from("brand-logos").getPublicUrl(path);
-    return data.publicUrl;
+    return uploadBrandLogo(formData);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -81,20 +122,23 @@ export default function BrandEditor({ brand }: Props) {
     let finalLogoUrl = logoUrl;
 
     if (logoFile) {
-      const uploaded = await uploadLogo(logoFile);
-      if (!uploaded) {
-        setError("Image upload failed. Please try again.");
+      const result = await uploadLogo(logoFile);
+      if ("error" in result) {
+        setError(result.error);
         setSaving(false);
         return;
       }
-      finalLogoUrl = uploaded;
+      finalLogoUrl = result.url;
     }
 
     const fields = {
       name: name.trim(),
+      slug: slugify(name.trim()),
       specialty: specialty.trim(),
       description: description.trim(),
+      services: services.map((s) => s.trim()).filter(Boolean),
       logo_url: finalLogoUrl,
+      icon: icon,
       website_url: websiteUrl.trim() || null,
       is_published: isPublished,
     };
@@ -193,6 +237,82 @@ export default function BrandEditor({ brand }: Props) {
           )}
         </div>
 
+        {/* Icon */}
+        <div className="space-y-1.5">
+          <Label>
+            Icon{" "}
+            <span className="text-muted-foreground font-normal text-xs">(shown when no logo)</span>
+          </Label>
+
+          {icon ? (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <DynamicIcon name={icon} className="w-5 h-5 text-primary" />
+              </div>
+              <span className="text-sm text-muted-foreground">{icon}</span>
+              <button
+                type="button"
+                onClick={() => setIcon(null)}
+                className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+              >
+                Remove
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowIconPicker((v) => !v)}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Change
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowIconPicker((v) => !v)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-dashed border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground text-sm transition-colors"
+            >
+              <Smile className="w-4 h-4" />
+              {showIconPicker ? "Close picker" : "Pick an icon"}
+            </button>
+          )}
+
+          {showIconPicker && (
+            <div className="border border-border rounded-xl p-4 space-y-3 bg-card">
+              <Input
+                placeholder="Search icons…"
+                value={iconSearch}
+                onChange={(e) => setIconSearch(e.target.value)}
+                className="h-8 text-sm"
+                autoFocus
+              />
+              <div className="grid grid-cols-8 sm:grid-cols-10 gap-1.5 max-h-52 overflow-y-auto pr-1">
+                {filteredIcons.map((name) => (
+                  <button
+                    key={name}
+                    type="button"
+                    title={name}
+                    onClick={() => {
+                      setIcon(name);
+                      setShowIconPicker(false);
+                      setIconSearch("");
+                    }}
+                    className={`aspect-square flex items-center justify-center rounded-lg transition-colors hover:bg-primary/10 hover:text-primary ${
+                      icon === name ? "bg-primary/15 text-primary" : "text-muted-foreground"
+                    }`}
+                  >
+                    <DynamicIcon name={name} className="w-4 h-4" />
+                  </button>
+                ))}
+                {filteredIcons.length === 0 && (
+                  <p className="col-span-full text-xs text-muted-foreground py-4 text-center">
+                    No icons match &ldquo;{iconSearch}&rdquo;
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="grid md:grid-cols-2 gap-5">
           {/* Name */}
           <div className="space-y-1.5 md:col-span-2">
@@ -244,6 +364,43 @@ export default function BrandEditor({ brand }: Props) {
               rows={4}
               className="resize-none"
             />
+          </div>
+
+          {/* Services */}
+          <div className="space-y-2 md:col-span-2">
+            <Label>
+              Services{" "}
+              <span className="text-muted-foreground font-normal text-xs">(bullet points on site)</span>
+            </Label>
+            <div className="space-y-2">
+              {services.map((s, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <Input
+                    value={s}
+                    onChange={(e) => {
+                      const next = [...services];
+                      next[i] = e.target.value;
+                      setServices(next);
+                    }}
+                    placeholder={`Service ${i + 1}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setServices(services.filter((_, j) => j !== i))}
+                    className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setServices([...services, ""])}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add service
+            </button>
           </div>
         </div>
 

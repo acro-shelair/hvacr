@@ -2,14 +2,24 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { logActivity } from "@/lib/supabase/logging";
+
+function getServiceClient() {
+  return createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 type BrandFields = {
   name?: string;
   slug?: string;
   specialty?: string;
   description?: string;
+  services?: string[];
   logo_url?: string | null;
+  icon?: string | null;
   website_url?: string | null;
   is_published?: boolean;
 };
@@ -54,6 +64,23 @@ export async function deleteBrand(id: string) {
   await supabase.from("brands").delete().eq("id", id);
   await logActivity("delete", "brands", `Deleted brand ${id}`, id);
   revalidatePath("/admin/brands");
+}
+
+export async function uploadBrandLogo(formData: FormData) {
+  const supabase = getServiceClient();
+  const file = formData.get("file") as Blob | null;
+  const path = formData.get("path") as string;
+
+  if (!file || !path) return { error: "Missing file or path" };
+
+  const { error } = await supabase.storage
+    .from("brand-logos")
+    .upload(path, file, { upsert: true, contentType: "image/webp" });
+
+  if (error) return { error: error.message };
+
+  const { data } = supabase.storage.from("brand-logos").getPublicUrl(path);
+  return { url: data.publicUrl };
 }
 
 export async function reorderBrands(orderedIds: string[]) {

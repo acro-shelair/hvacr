@@ -82,16 +82,13 @@ const formatDate = (d?: string | null) =>
 function RoleDialog({
   user,
   profile,
-  open,
-  onClose,
   onSuccess,
 }: {
   user: User;
   profile: UserProfile | null;
-  open: boolean;
-  onClose: () => void;
   onSuccess: () => void;
 }) {
+  const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [role, setRole] = useState<Role>(profile?.role ?? "employee");
@@ -123,7 +120,7 @@ function RoleDialog({
         role,
         role === "admin" ? [] : permissions
       );
-      onClose();
+      setOpen(false);
       onSuccess();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to save.");
@@ -133,12 +130,12 @@ function RoleDialog({
   };
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        if (!v) onClose();
-      }}
-    >
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Shield className="w-3.5 h-3.5 mr-2" /> Role & Permissions
+        </DropdownMenuItem>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Role & Permissions</DialogTitle>
@@ -222,7 +219,7 @@ function RoleDialog({
         )}
 
         <div className="flex gap-2 justify-end">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button onClick={save} disabled={saving}>
@@ -491,24 +488,15 @@ function CreateDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-// ─── Edit email dialog ────────────────────────────────────────────────────────
+// ─── Edit email / change password dialogs ─────────────────────────────────────
 
 const emailSchema = z.object({ email: z.string().email() });
 const passwordSchema = z.object({ password: z.string().min(6) });
 type EmailData = z.infer<typeof emailSchema>;
 type PasswordData = z.infer<typeof passwordSchema>;
 
-function EditEmailDialog({
-  user,
-  open,
-  onClose,
-  onSuccess,
-}: {
-  user: User;
-  open: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
-}) {
+function EditEmailDialog({ user, onSuccess }: { user: User; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const {
     register,
@@ -522,19 +510,19 @@ function EditEmailDialog({
     setError(null);
     try {
       await updateUserEmail(user.id, data.email);
-      onClose();
+      setOpen(false);
       onSuccess();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed.");
     }
   };
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        if (!v) onClose();
-      }}
-    >
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Pencil className="w-3.5 h-3.5 mr-2" /> Update Email
+        </DropdownMenuItem>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Update Email</DialogTitle>
@@ -550,7 +538,7 @@ function EditEmailDialog({
             </p>
           )}
           <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
@@ -563,17 +551,8 @@ function EditEmailDialog({
   );
 }
 
-function ChangePasswordDialog({
-  user,
-  open,
-  onClose,
-  onSuccess,
-}: {
-  user: User;
-  open: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
-}) {
+function ChangePasswordDialog({ user, onSuccess }: { user: User; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const {
     register,
@@ -586,19 +565,19 @@ function ChangePasswordDialog({
     try {
       await updateUserPassword(user.id, data.password);
       reset();
-      onClose();
+      setOpen(false);
       onSuccess();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed.");
     }
   };
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        if (!v) onClose();
-      }}
-    >
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <KeyRound className="w-3.5 h-3.5 mr-2" /> Change Password
+        </DropdownMenuItem>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Change Password</DialogTitle>
@@ -618,7 +597,7 @@ function ChangePasswordDialog({
             </p>
           )}
           <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
@@ -633,8 +612,6 @@ function ChangePasswordDialog({
 
 // ─── User actions dropdown ────────────────────────────────────────────────────
 
-type DialogType = "role" | "email" | "password" | null;
-
 function UserActions({
   user,
   profile,
@@ -645,7 +622,6 @@ function UserActions({
   onRefresh: () => void;
 }) {
   const [loading, setLoading] = useState(false);
-  const [activeDialog, setActiveDialog] = useState<DialogType>(null);
   const isBanned = !!(user as { banned_until?: string }).banned_until;
 
   const run = async (fn: () => Promise<void>) => {
@@ -660,79 +636,45 @@ function UserActions({
     }
   };
 
-  const closeDialog = () => setActiveDialog(null);
-
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button size="sm" variant="ghost" disabled={loading}>
-            <MoreHorizontal className="w-4 h-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-52">
-          <DropdownMenuItem onClick={() => setActiveDialog("role")}>
-            <Shield className="w-3.5 h-3.5 mr-2" /> Role & Permissions
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size="sm" variant="ghost" disabled={loading}>
+          <MoreHorizontal className="w-4 h-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-52">
+        <RoleDialog user={user} profile={profile} onSuccess={onRefresh} />
+        <DropdownMenuSeparator />
+        <EditEmailDialog user={user} onSuccess={onRefresh} />
+        <ChangePasswordDialog user={user} onSuccess={onRefresh} />
+        <DropdownMenuItem onClick={() => run(() => sendPasswordReset(user.email!))}>
+          <RefreshCw className="w-3.5 h-3.5 mr-2" /> Send Password Reset
+        </DropdownMenuItem>
+        {!user.email_confirmed_at && (
+          <DropdownMenuItem onClick={() => run(() => confirmUserEmail(user.id))}>
+            <CheckCircle className="w-3.5 h-3.5 mr-2" /> Confirm Email
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setActiveDialog("email")}>
-            <Pencil className="w-3.5 h-3.5 mr-2" /> Update Email
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setActiveDialog("password")}>
-            <KeyRound className="w-3.5 h-3.5 mr-2" /> Change Password
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => run(() => sendPasswordReset(user.email!))}
-          >
-            <RefreshCw className="w-3.5 h-3.5 mr-2" /> Send Password Reset
-          </DropdownMenuItem>
-          {!user.email_confirmed_at && (
-            <DropdownMenuItem
-              onClick={() => run(() => confirmUserEmail(user.id))}
-            >
-              <CheckCircle className="w-3.5 h-3.5 mr-2" /> Confirm Email
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => run(() => setBanStatus(user.id, !isBanned))}
-            className={isBanned ? "text-green-600" : "text-amber-600"}
-          >
-            <Ban className="w-3.5 h-3.5 mr-2" />
-            {isBanned ? "Unban User" : "Ban User"}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="text-destructive"
-            onClick={() => {
-              if (confirm(`Delete ${user.email}? This cannot be undone.`))
-                run(() => deleteUser(user.id));
-            }}
-          >
-            <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete User
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <RoleDialog
-        user={user}
-        profile={profile}
-        open={activeDialog === "role"}
-        onClose={closeDialog}
-        onSuccess={onRefresh}
-      />
-      <EditEmailDialog
-        user={user}
-        open={activeDialog === "email"}
-        onClose={closeDialog}
-        onSuccess={onRefresh}
-      />
-      <ChangePasswordDialog
-        user={user}
-        open={activeDialog === "password"}
-        onClose={closeDialog}
-        onSuccess={onRefresh}
-      />
-    </>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => run(() => setBanStatus(user.id, !isBanned))}
+          className={isBanned ? "text-green-600" : "text-amber-600"}
+        >
+          <Ban className="w-3.5 h-3.5 mr-2" />
+          {isBanned ? "Unban User" : "Ban User"}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive"
+          onClick={() => {
+            if (confirm(`Delete ${user.email}? This cannot be undone.`))
+              run(() => deleteUser(user.id));
+          }}
+        >
+          <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete User
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

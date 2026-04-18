@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cn } from "@/lib/utils";
 
 type Variant = "default" | "outline" | "ghost" | "destructive";
 type Size = "default" | "sm" | "lg" | "icon";
@@ -25,30 +27,21 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
 };
 
-export function Button({
-  variant = "default",
-  size = "default",
-  asChild = false,
-  className = "",
-  children,
-  ...props
-}: ButtonProps) {
-  const classes = [
-    "inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none",
-    variantClass[variant],
-    sizeClass[size],
-    className,
-  ].join(" ");
-
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<{ className?: string }>, {
-      className: [classes, (children.props as { className?: string }).className ?? ""].join(" ").trim(),
-    });
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant = "default", size = "default", asChild = false, className, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
+    return (
+      <Comp
+        ref={ref}
+        className={cn(
+          "inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          variantClass[variant],
+          sizeClass[size],
+          className
+        )}
+        {...props}
+      />
+    );
   }
-
-  return (
-    <button className={classes} {...props}>
-      {children}
-    </button>
-  );
-}
+);
+Button.displayName = "Button";
