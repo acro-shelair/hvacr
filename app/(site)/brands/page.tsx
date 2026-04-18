@@ -170,7 +170,6 @@ export default async function BrandsPage() {
                           width={320}
                           height={240}
                           className="object-contain p-8"
-                          style={{ width: "auto", height: "auto" }}
                         />
                       ) : (
                         <BrandIcon className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 text-accent/30" />
