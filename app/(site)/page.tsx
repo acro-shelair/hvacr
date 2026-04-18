@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  Building,
-  CheckCircle,
-  Factory,
-  GraduationCap,
-  HeartPulse,
-  Phone,
-  Snowflake,
-  Tent,
-  UtensilsCrossed,
-  Wind,
-  Box,
-} from "lucide-react";
+import { CheckCircle, Phone } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import FaqAccordion from "@/components/FaqAccordion";
 import { createClient } from "@/lib/supabase/server";
+import { getIcon } from "@/lib/icons";
 
 export const metadata: Metadata = {
   title:
@@ -30,49 +19,6 @@ const stats = [
   { value: "3", label: "Specialist Brands" },
   { value: "1000s", label: "Projects Completed" },
   { value: "5-Year", label: "Workmanship Guarantee" },
-];
-
-const brands = [
-  {
-    name: "Acro Refrigeration",
-    specialty: "Commercial & industrial refrigeration specialists since 1972.",
-    services: [
-      "Cold room installation & repair",
-      "Refrigerated transport systems",
-      "Preventative maintenance programs",
-    ],
-    icon: Snowflake,
-  },
-  {
-    name: "Shelair",
-    specialty:
-      "Air conditioning design, installation and servicing for commercial environments.",
-    services: [
-      "VRV/VRF system design & install",
-      "Ducted & split system solutions",
-      "BMS integration & controls",
-    ],
-    icon: Wind,
-  },
-  {
-    name: "Koolacube",
-    specialty: "Relocatable cold rooms and portable refrigeration solutions.",
-    services: [
-      "Modular cold & freezer rooms",
-      "Event & emergency cold storage",
-      "Rapid deployment solutions",
-    ],
-    icon: Box,
-  },
-];
-
-const industries = [
-  { icon: HeartPulse, label: "Healthcare & Hospitals" },
-  { icon: UtensilsCrossed, label: "Hospitality & Food Service" },
-  { icon: GraduationCap, label: "Education & Schools" },
-  { icon: Building, label: "Commercial & Retail" },
-  { icon: Factory, label: "Industrial & Warehousing" },
-  { icon: Tent, label: "Events & Temporary Storage" },
 ];
 
 const features = [
@@ -139,11 +85,29 @@ const jsonLd = {
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const { data: faqs } = await supabase
-    .from("faqs")
-    .select("id, question, answer")
-    .eq("is_published", true)
-    .order("display_order", { ascending: true });
+
+  const [{ data: faqsData }, { data: brandsData }, { data: industriesData }] =
+    await Promise.all([
+      supabase
+        .from("faqs")
+        .select("id, question, answer")
+        .eq("is_published", true)
+        .order("display_order", { ascending: true }),
+      supabase
+        .from("brands")
+        .select("id, name, slug, specialty, services, icon, website_url")
+        .eq("is_published", true)
+        .order("display_order", { ascending: true }),
+      supabase
+        .from("industries")
+        .select("id, name, icon_name")
+        .eq("is_published", true)
+        .order("display_order", { ascending: true }),
+    ]);
+
+  const faqs = faqsData ?? [];
+  const brands = brandsData ?? [];
+  const industries = industriesData ?? [];
 
   return (
     <>
@@ -217,76 +181,91 @@ export default async function HomePage() {
       </section>
 
       {/* BRANDS */}
-      <section className="section-padding bg-surface-alt">
-        <div className="container-main">
-          <AnimatedSection className="text-center mb-10 sm:mb-12 md:mb-16">
-            <h2 className="section-heading mb-4">
-              Three Brands. One Standard of Excellence.
-            </h2>
-            <p className="text-muted-foreground font-body text-base sm:text-lg max-w-162.5 mx-auto">
-              Each brand is a specialist — united by HVACR Group&apos;s
-              commitment to quality, compliance, and client relationships.
-            </p>
-          </AnimatedSection>
+      {brands.length > 0 && (
+        <section className="section-padding bg-surface-alt">
+          <div className="container-main">
+            <AnimatedSection className="text-center mb-10 sm:mb-12 md:mb-16">
+              <h2 className="section-heading mb-4">
+                Three Brands. One Standard of Excellence.
+              </h2>
+              <p className="text-muted-foreground font-body text-base sm:text-lg max-w-162.5 mx-auto">
+                Each brand is a specialist — united by HVACR Group&apos;s
+                commitment to quality, compliance, and client relationships.
+              </p>
+            </AnimatedSection>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {brands.map((brand, i) => (
-              <AnimatedSection key={brand.name} delay={i * 0.1}>
-                <div className="brand-card h-full flex flex-col">
-                  <brand.icon className="w-10 h-10 text-accent mb-4" />
-                  <h3 className="font-display font-bold text-xl text-charcoal mb-2">
-                    {brand.name}
-                  </h3>
-                  <p className="text-muted-foreground font-body text-[15px] mb-4">
-                    {brand.specialty}
-                  </p>
-                  <ul className="space-y-2 mb-6 flex-1">
-                    {brand.services.map((s) => (
-                      <li
-                        key={s}
-                        className="flex items-start gap-2 text-sm font-body text-foreground"
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {brands.map((brand, i) => {
+                const BrandIcon = getIcon(brand.icon);
+                const services: string[] = Array.isArray(brand.services)
+                  ? brand.services
+                  : [];
+                return (
+                  <AnimatedSection key={brand.id} delay={i * 0.1}>
+                    <div className="brand-card h-full flex flex-col">
+                      <BrandIcon className="w-10 h-10 text-accent mb-4" />
+                      <h3 className="font-display font-bold text-xl text-charcoal mb-2">
+                        {brand.name}
+                      </h3>
+                      <p className="text-muted-foreground font-body text-[15px] mb-4">
+                        {brand.specialty}
+                      </p>
+                      <ul className="space-y-2 mb-6 flex-1">
+                        {services.map((s) => (
+                          <li
+                            key={s}
+                            className="flex items-start gap-2 text-sm font-body text-foreground"
+                          >
+                            <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+                            {s}
+                          </li>
+                        ))}
+                      </ul>
+                      <Link
+                        href={`${brand.website_url}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-outline-navy text-sm h-10 px-4 self-start"
                       >
-                        <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href="/brands"
-                    className="btn-outline-navy text-sm h-10 px-4 self-start"
-                  >
-                    Visit {brand.name.split(" ")[0]} →
-                  </Link>
-                </div>
-              </AnimatedSection>
-            ))}
+                        Visit {brand.name.split(" ")[0]} →
+                      </Link>
+                    </div>
+                  </AnimatedSection>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* INDUSTRIES */}
-      <section className="section-padding bg-navy diagonal-texture">
-        <div className="container-main">
-          <AnimatedSection className="text-center mb-10 sm:mb-12 md:mb-16">
-            <h2 className="font-display font-bold text-primary-foreground text-2xl sm:text-[28px] md:text-[36px] lg:text-[44px] mb-4">
-              Industries We Serve
-            </h2>
-          </AnimatedSection>
+      {industries.length > 0 && (
+        <section className="section-padding bg-navy diagonal-texture">
+          <div className="container-main">
+            <AnimatedSection className="text-center mb-10 sm:mb-12 md:mb-16">
+              <h2 className="font-display font-bold text-primary-foreground text-2xl sm:text-[28px] md:text-[36px] lg:text-[44px] mb-4">
+                Industries We Serve
+              </h2>
+            </AnimatedSection>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-            {industries.map((ind, i) => (
-              <AnimatedSection key={ind.label} delay={i * 0.05}>
-                <div className="border border-primary-foreground/20 rounded-xl p-4 sm:p-6 md:p-8 text-center h-full flex flex-col items-center justify-center transition-all duration-200 hover:bg-accent hover:border-accent group cursor-default">
-                  <ind.icon className="w-7 h-7 sm:w-8 sm:h-8 text-primary-foreground/80 mx-auto mb-2 sm:mb-3 group-hover:text-accent-foreground transition-colors" />
-                  <span className="text-primary-foreground font-body font-medium text-xs sm:text-sm md:text-base group-hover:text-accent-foreground transition-colors">
-                    {ind.label}
-                  </span>
-                </div>
-              </AnimatedSection>
-            ))}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+              {industries.map((ind, i) => {
+                const IndIcon = getIcon(ind.icon_name);
+                return (
+                  <AnimatedSection key={ind.id} delay={i * 0.05}>
+                    <div className="border border-primary-foreground/20 rounded-xl p-4 sm:p-6 md:p-8 text-center h-full flex flex-col items-center justify-center transition-all duration-200 hover:bg-accent hover:border-accent group cursor-default">
+                      <IndIcon className="w-7 h-7 sm:w-8 sm:h-8 text-primary-foreground/80 mx-auto mb-2 sm:mb-3 group-hover:text-accent-foreground transition-colors" />
+                      <span className="text-primary-foreground font-body font-medium text-xs sm:text-sm md:text-base group-hover:text-accent-foreground transition-colors">
+                        {ind.name}
+                      </span>
+                    </div>
+                  </AnimatedSection>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* WHY HVACR */}
       <section className="section-padding bg-surface">
@@ -323,7 +302,7 @@ export default async function HomePage() {
       </section>
 
       {/* FAQS */}
-      {faqs && faqs.length > 0 && (
+      {faqs.length > 0 && (
         <section className="section-padding bg-surface-alt">
           <div className="container-main">
             <AnimatedSection className="text-center mb-10 sm:mb-12">

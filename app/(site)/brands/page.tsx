@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Box, CheckCircle, Snowflake, Wind } from "lucide-react";
+import Image from "next/image";
+import { CheckCircle } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
+import { createClient } from "@/lib/supabase/server";
+import { getIcon } from "@/lib/icons";
 
 export const metadata: Metadata = {
   title: "Our Brands | Acro Refrigeration, Shelair & Koolacube",
@@ -10,52 +13,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/brands" },
 };
 
-const brands = [
-  {
-    name: "Acro Refrigeration",
-    icon: Snowflake,
-    specialty: "Commercial & Industrial Refrigeration",
-    description:
-      "Established in 1972, Acro Refrigeration is one of Queensland's longest-serving commercial refrigeration contractors. From cold rooms to industrial process cooling, Acro delivers end-to-end refrigeration solutions backed by decades of expertise.",
-    services: [
-      "Commercial cold room design & installation",
-      "Industrial process cooling systems",
-      "Supermarket refrigeration fit-outs",
-      "Preventative maintenance programs",
-      "24/7 emergency breakdown service",
-    ],
-  },
-  {
-    name: "Shelair",
-    icon: Wind,
-    specialty: "Air Conditioning & Climate Control",
-    description:
-      "Founded in 1993, Shelair delivers precision air conditioning solutions for commercial and institutional environments. From VRV/VRF system design to BMS integration, Shelair ensures optimal climate control across any scale of project.",
-    services: [
-      "VRV/VRF system design & installation",
-      "Ducted & split system solutions",
-      "Building Management System (BMS) integration",
-      "Mechanical ventilation design",
-      "Ongoing service & maintenance contracts",
-    ],
-  },
-  {
-    name: "Koolacube",
-    icon: Box,
-    specialty: "Relocatable Cold Rooms & Portable Refrigeration",
-    description:
-      "Launched in 2015, Koolacube provides innovative relocatable cold room and freezer room solutions. Purpose-built for events, emergencies, and temporary operations, Koolacube delivers rapid deployment without compromising on performance.",
-    services: [
-      "Modular cold & freezer rooms",
-      "Event & festival cold storage",
-      "Emergency & disaster response units",
-      "Pharmaceutical-grade temperature control",
-      "Short & long-term hire options",
-    ],
-  },
-];
+export default async function BrandsPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("brands")
+    .select("id, name, slug, specialty, description, services, logo_url, icon")
+    .eq("is_published", true)
+    .order("display_order", { ascending: true });
 
-export default function BrandsPage() {
+  const brands = data ?? [];
+
   return (
     <>
       <section className="bg-navy diagonal-texture -mt-18 pt-26 sm:pt-32 md:pt-43 pb-14 sm:pb-16 md:pb-20 lg:pb-25">
@@ -72,9 +39,14 @@ export default function BrandsPage() {
 
       {brands.map((brand, i) => {
         const reversed = i % 2 === 1;
+        const BrandIcon = getIcon(brand.icon);
+        const services: string[] = Array.isArray(brand.services)
+          ? brand.services
+          : [];
+
         return (
           <section
-            key={brand.name}
+            key={brand.id}
             className={`section-padding ${
               i % 2 === 0 ? "bg-card" : "bg-surface-alt"
             }`}
@@ -90,7 +62,7 @@ export default function BrandsPage() {
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-3 sm:mb-4">
-                      <brand.icon className="w-7 h-7 sm:w-8 sm:h-8 text-accent shrink-0" />
+                      <BrandIcon className="w-7 h-7 sm:w-8 sm:h-8 text-accent shrink-0" />
                       <span className="font-body text-accent font-medium text-xs sm:text-sm uppercase tracking-wider">
                         {brand.specialty}
                       </span>
@@ -102,7 +74,7 @@ export default function BrandsPage() {
                       {brand.description}
                     </p>
                     <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
-                      {brand.services.map((s) => (
+                      {services.map((s) => (
                         <li
                           key={s}
                           className="flex items-start gap-2 font-body text-foreground text-sm sm:text-[15px]"
@@ -126,8 +98,18 @@ export default function BrandsPage() {
                         : "lg:order-2 lg:col-span-5"
                     }`}
                   >
-                    <div className="bg-navy/5 rounded-2xl aspect-4/3 flex items-center justify-center">
-                      <brand.icon className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 text-accent/30" />
+                    <div className="bg-navy/5 rounded-2xl aspect-4/3 flex items-center justify-center overflow-hidden">
+                      {brand.logo_url ? (
+                        <Image
+                          src={brand.logo_url}
+                          alt={`${brand.name} logo`}
+                          width={320}
+                          height={240}
+                          className="object-contain p-8"
+                        />
+                      ) : (
+                        <BrandIcon className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 text-accent/30" />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -136,6 +118,14 @@ export default function BrandsPage() {
           </section>
         );
       })}
+
+      {brands.length === 0 && (
+        <section className="section-padding bg-card">
+          <div className="container-main text-center text-muted-foreground font-body">
+            No brands available at this time.
+          </div>
+        </section>
+      )}
     </>
   );
 }

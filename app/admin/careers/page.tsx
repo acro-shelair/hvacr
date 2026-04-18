@@ -22,6 +22,7 @@ export type JobApplication = {
   phone: string | null;
   position: string;
   message: string;
+  document_urls: string[];
   is_read: boolean;
   created_at: string;
 };
@@ -36,7 +37,9 @@ export default async function CareersPage() {
       .order("display_order", { ascending: true }),
     supabase
       .from("job_applications")
-      .select("id, job_posting_id, name, email, phone, position, message, is_read, created_at")
+      .select(
+        "id, job_posting_id, name, email, phone, position, message, document_urls, is_read, created_at"
+      )
       .order("created_at", { ascending: false }),
   ]);
 

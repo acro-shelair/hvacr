@@ -82,7 +82,29 @@ export async function markApplicationRead(id: string) {
 
 export async function deleteApplication(id: string) {
   const supabase = await createClient();
+
+  const { data: existing } = await supabase
+    .from("job_applications")
+    .select("document_urls")
+    .eq("id", id)
+    .single();
+
+  if (existing?.document_urls?.length) {
+    await supabase.storage.from("job-applications").remove(existing.document_urls);
+  }
+
   await supabase.from("job_applications").delete().eq("id", id);
   await logActivity("delete", "job_applications", `Deleted application ${id}`, id);
   revalidatePath("/admin/careers");
+}
+
+export async function getApplicationDocumentUrl(path: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.storage
+    .from("job-applications")
+    .createSignedUrl(path, 300);
+  if (error || !data) {
+    return { error: error?.message ?? "Could not generate link." };
+  }
+  return { url: data.signedUrl };
 }

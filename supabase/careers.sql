@@ -64,9 +64,14 @@ create table if not exists public.job_applications (
   phone           text,
   position        text not null,
   message         text not null,
+  document_urls   text[] not null default '{}',
   is_read         boolean not null default false,
   created_at      timestamptz not null default now()
 );
+
+-- For existing installs, add the column if it wasn't there yet.
+alter table public.job_applications
+  add column if not exists document_urls text[] not null default '{}';
 
 create index if not exists job_applications_created_at_idx on public.job_applications(created_at desc);
 create index if not exists job_applications_job_id_idx on public.job_applications(job_posting_id);
@@ -90,3 +95,24 @@ create policy "applications_admin_update" on public.job_applications
 drop policy if exists "applications_admin_delete" on public.job_applications;
 create policy "applications_admin_delete" on public.job_applications
   for delete using (auth.uid() is not null);
+
+-- ============================================================
+-- Storage bucket for applicant documents (private)
+-- Uploads happen server-side via the service role; admins read
+-- via signed URLs generated from authenticated sessions.
+-- ============================================================
+insert into storage.buckets (id, name, public)
+values ('job-applications', 'job-applications', false)
+on conflict (id) do nothing;
+
+drop policy if exists "job_applications_public_upload" on storage.objects;
+create policy "job_applications_public_upload" on storage.objects
+  for insert with check (bucket_id = 'job-applications');
+
+drop policy if exists "job_applications_admin_read" on storage.objects;
+create policy "job_applications_admin_read" on storage.objects
+  for select using (bucket_id = 'job-applications' and auth.uid() is not null);
+
+drop policy if exists "job_applications_admin_delete" on storage.objects;
+create policy "job_applications_admin_delete" on storage.objects
+  for delete using (bucket_id = 'job-applications' and auth.uid() is not null);

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Mail, MapPin, Phone } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import ContactForm from "./ContactForm";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Contact HVACR Group | 1300 227 600 | Kelvin Grove QLD",
@@ -26,7 +27,22 @@ const jsonLd = {
   },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("site_settings")
+    .select("key, value")
+    .in("key", ["contact_phone", "contact_email", "contact_address"]);
+
+  const settings: Record<string, string> = {};
+  for (const row of data ?? []) settings[row.key] = row.value;
+
+  const phone = settings.contact_phone || "1300 227 600";
+  const email = settings.contact_email || "info@hvacrgroup.com.au";
+  const address = settings.contact_address || "Kelvin Grove, QLD 4059";
+  const phoneHref = `tel:${phone.replace(/\s/g, "")}`;
+  const emailHref = `mailto:${email}`;
+
   return (
     <>
       <script
@@ -34,13 +50,14 @@ export default function ContactPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="bg-navy diagonal-texture -mt-[72px] pt-[104px] sm:pt-[128px] md:pt-[172px] pb-14 sm:pb-16 md:pb-20 lg:pb-[100px]">
+      <section className="bg-navy diagonal-texture -mt-18 pt-26 sm:pt-32 md:pt-43 pb-14 sm:pb-16 md:pb-20 lg:pb-25">
         <div className="container-main">
           <h1 className="font-display font-extrabold text-primary-foreground text-[32px] sm:text-[40px] md:text-[56px] leading-tight mb-4">
             Contact Us
           </h1>
-          <p className="text-primary-foreground/70 font-body text-base sm:text-lg max-w-[450px]">
-            We&apos;d love to hear from you. Reach out for a quote, enquiry, or to discuss your project.
+          <p className="text-primary-foreground/70 font-body text-base sm:text-lg max-w-112.5">
+            We&apos;d love to hear from you. Reach out for a quote, enquiry, or
+            to discuss your project.
           </p>
         </div>
       </section>
@@ -55,31 +72,32 @@ export default function ContactPage() {
 
             <AnimatedSection className="lg:col-span-5" delay={0.15}>
               <div className="bg-navy diagonal-texture rounded-2xl p-6 sm:p-8 text-primary-foreground">
-                <h3 className="font-display font-bold text-lg sm:text-xl mb-5 sm:mb-6">Contact Details</h3>
+                <h3 className="font-display font-bold text-lg sm:text-xl mb-5 sm:mb-6">
+                  Contact Details
+                </h3>
                 <address className="not-italic space-y-5">
                   <div className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 text-accent mt-0.5" />
-                    <div className="font-body text-sm text-primary-foreground/80">
-                      <p>Kelvin Grove, QLD 4059</p>
-                      <p>Australia</p>
-                    </div>
+                    <p className="font-body text-sm text-primary-foreground/80 whitespace-pre-line">
+                      {address}
+                    </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <Phone className="w-5 h-5 text-accent" />
                     <a
-                      href="tel:1300227600"
+                      href={phoneHref}
                       className="font-body text-sm text-primary-foreground/80 hover:text-accent transition-colors"
                     >
-                      1300 227 600
+                      {phone}
                     </a>
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-accent" />
                     <a
-                      href="mailto:info@hvacrgroup.com.au"
+                      href={emailHref}
                       className="font-body text-sm text-primary-foreground/80 hover:text-accent transition-colors"
                     >
-                      info@hvacrgroup.com.au
+                      {email}
                     </a>
                   </div>
                 </address>
@@ -98,7 +116,8 @@ export default function ContactPage() {
                 </div>
 
                 <p className="text-primary-foreground/50 font-body text-xs mt-6">
-                  For brand-specific enquiries, please select the relevant option in the enquiry form.
+                  For brand-specific enquiries, please select the relevant
+                  option in the enquiry form.
                 </p>
               </div>
             </AnimatedSection>

@@ -25,12 +25,16 @@ export default function Footer() {
               />
             </div>
             <p className="text-primary-foreground/70 font-body text-sm leading-relaxed max-w-md">
-              Queensland&apos;s most trusted refrigeration and climate control group. Three specialist brands united by quality, compliance, and lasting relationships.
+              Queensland&apos;s most trusted refrigeration and climate control
+              group. Three specialist brands united by quality, compliance, and
+              lasting relationships.
             </p>
           </div>
 
           <div>
-            <h4 className="font-display font-bold text-base sm:text-lg mb-3 sm:mb-4">Quick Links</h4>
+            <h4 className="font-display font-bold text-base sm:text-lg mb-3 sm:mb-4">
+              Quick Links
+            </h4>
             <nav className="flex flex-col gap-2" aria-label="Footer navigation">
               {footerLinks.map((link) => (
                 <Link
@@ -45,20 +49,30 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display font-bold text-base sm:text-lg mb-3 sm:mb-4">Contact</h4>
+            <h4 className="font-display font-bold text-base sm:text-lg mb-3 sm:mb-4">
+              Contact
+            </h4>
             <address className="not-italic text-primary-foreground/70 text-sm font-body space-y-2">
               <p>Kelvin Grove, QLD 4059</p>
               <p>
-                <a href="tel:1300227600" className="hover:text-accent transition-colors">
+                <a
+                  href="tel:1300227600"
+                  className="hover:text-accent transition-colors"
+                >
                   1300 227 600
                 </a>
               </p>
               <p>
-                <a href="mailto:info@hvacrgroup.com.au" className="hover:text-accent transition-colors break-all">
+                <a
+                  href="mailto:info@hvacrgroup.com.au"
+                  className="hover:text-accent transition-colors break-all"
+                >
                   info@hvacrgroup.com.au
                 </a>
               </p>
-              <p className="pt-2 text-primary-foreground/50 text-xs">ABN: XX XXX XXX XXX</p>
+              <p className="pt-2 text-primary-foreground/50 text-xs">
+                ABN: 43 672 578 264
+              </p>
             </address>
           </div>
         </div>
@@ -67,7 +81,8 @@ export default function Footer() {
       <div className="border-t border-accent/30">
         <div className="container-main py-5 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 text-center md:text-left">
           <p className="text-primary-foreground/50 text-xs font-body order-2 md:order-1">
-            © {new Date().getFullYear()} HVACR Group Pty Ltd. All rights reserved.
+            © {new Date().getFullYear()} HVACR Group Pty Ltd. All rights
+            reserved.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-1 text-primary-foreground/40 text-xs font-body order-1 md:order-2">
             <span>ARCtick Licensed</span>

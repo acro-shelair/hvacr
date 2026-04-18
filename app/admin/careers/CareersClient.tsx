@@ -15,6 +15,9 @@ import {
   ChevronDown,
   ChevronUp,
   Plus,
+  FileText,
+  Download,
+  Loader2,
 } from "lucide-react";
 import {
   deleteJobPosting,
@@ -22,6 +25,7 @@ import {
   updateJobPosting,
   markApplicationRead,
   deleteApplication,
+  getApplicationDocumentUrl,
 } from "./actions";
 import type { JobPosting, JobApplication } from "./page";
 import { Button } from "@/components/ui/button";
@@ -485,6 +489,19 @@ function ApplicationsTab({
                     </p>
                   </div>
 
+                  {app.document_urls.length > 0 && (
+                    <div className="mt-5">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+                        Attachments
+                      </p>
+                      <ul className="space-y-1.5">
+                        {app.document_urls.map((path) => (
+                          <DocumentRow key={path} path={path} />
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-end gap-2 mt-5 pt-4 border-t border-border">
                     {isConfirming ? (
                       <>
@@ -525,5 +542,47 @@ function ApplicationsTab({
         })}
       </div>
     </div>
+  );
+}
+
+// ── Document Row ──────────────────────────────────────────────
+
+function DocumentRow({ path }: { path: string }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const filename = path.split("/").pop()?.replace(/^\d+-[a-z0-9]+-/i, "") ?? path;
+
+  async function handleOpen() {
+    setLoading(true);
+    setError(null);
+    const result = await getApplicationDocumentUrl(path);
+    setLoading(false);
+    if (result.error || !result.url) {
+      setError(result.error ?? "Could not open document.");
+      return;
+    }
+    window.open(result.url, "_blank", "noopener,noreferrer");
+  }
+
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={handleOpen}
+        disabled={loading}
+        className="w-full flex items-center gap-2 bg-secondary hover:bg-secondary/80 border border-border rounded-lg px-3 py-2 text-sm text-left transition-colors disabled:opacity-60"
+      >
+        <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+        <span className="flex-1 truncate">{filename}</span>
+        {loading ? (
+          <Loader2 className="w-4 h-4 animate-spin text-muted-foreground shrink-0" />
+        ) : (
+          <Download className="w-4 h-4 text-muted-foreground shrink-0" />
+        )}
+      </button>
+      {error && (
+        <p className="text-xs text-destructive mt-1 px-3">{error}</p>
+      )}
+    </li>
   );
 }
