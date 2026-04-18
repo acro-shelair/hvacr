@@ -73,7 +73,9 @@ export default async function BrandsPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("brands")
-    .select("id, name, slug, specialty, description, services, logo_url, icon")
+    .select(
+      "id, name, slug, specialty, description, services, logo_url, icon, website_url"
+    )
     .eq("is_published", true)
     .order("display_order", { ascending: true });
 
@@ -145,10 +147,12 @@ export default async function BrandsPage() {
                       ))}
                     </ul>
                     <Link
-                      href="/contact"
+                      href={`${brand.website_url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn-primary w-full sm:w-auto"
                     >
-                      Enquire About {brand.name.split(" ")[0]} →
+                      Visit {brand.name.split(" ")[0]} →
                     </Link>
                   </div>
                   <div
@@ -166,6 +170,7 @@ export default async function BrandsPage() {
                           width={320}
                           height={240}
                           className="object-contain p-8"
+                          style={{ width: "auto", height: "auto" }}
                         />
                       ) : (
                         <BrandIcon className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 text-accent/30" />
