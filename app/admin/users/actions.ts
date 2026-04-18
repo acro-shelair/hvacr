@@ -116,6 +116,40 @@ export async function bulkSendPasswordReset() {
   return { sent, failed, total: users.length };
 }
 
+export async function updateUser(
+  userId: string,
+  data: { role: Role; permissions: PermissionKey[] }
+): Promise<{ error?: string }> {
+  try {
+    await upsertUserProfile(userId, data.role, data.permissions);
+    return {};
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to update user." };
+  }
+}
+
+export async function inviteUserWithProfile(data: {
+  email: string;
+  role: Role;
+  permissions: PermissionKey[];
+}): Promise<{ error?: string }> {
+  try {
+    const supabase = createAdminClient();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const { data: invited, error } = await supabase.auth.admin.inviteUserByEmail(data.email, {
+      redirectTo: `${siteUrl}/auth/callback?next=/admin/set-password`,
+    });
+    if (error) return { error: error.message };
+    await logActivity("create", "users", `Invited user: ${data.email}`);
+    if (invited?.user?.id) {
+      await upsertUserProfile(invited.user.id, data.role, data.permissions);
+    }
+    return {};
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to invite user." };
+  }
+}
+
 export async function getUserProfiles() {
   const supabase = createAdminClient();
   const { data, error } = await supabase

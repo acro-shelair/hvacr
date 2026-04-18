@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PERMISSION_KEYS, PERMISSION_LABELS, PERMISSION_PRESETS } from "@/lib/rbac";
 import type { Role, PermissionKey } from "@/lib/rbac";
-import { updateUser, inviteUser } from "./actions";
+import { updateUser, inviteUserWithProfile } from "./actions";
 
 type Mode =
   | { type: "edit"; userId: string; email: string; role: Role; permissions: PermissionKey[] }
@@ -45,7 +45,7 @@ export default function UserEditor({ mode }: { mode: Mode }) {
         permissions: role === "admin" ? [] : permissions,
       });
     } else {
-      result = await inviteUser({
+      result = await inviteUserWithProfile({
         email,
         role,
         permissions: role === "admin" ? [] : permissions,
