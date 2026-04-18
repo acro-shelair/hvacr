@@ -26,12 +26,12 @@ export default async function EditBrandPage({ params }: Props) {
       <div className="mb-6">
         <Link
           href="/admin/brands"
-          className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-4"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Brands
         </Link>
-        <h1 className="text-2xl font-bold text-foreground">Edit Brand</h1>
+        <h1 className="text-2xl font-bold">Edit Brand</h1>
         <p className="text-muted-foreground text-sm mt-1">{data.name}</p>
       </div>
       <BrandEditor brand={data as Brand} />

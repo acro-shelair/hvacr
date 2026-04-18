@@ -22,27 +22,31 @@ export default async function BrandsPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("brands")
-    .select("id, name, slug, specialty, description, logo_url, website_url, display_order, is_published, created_at")
+    .select(
+      "id, name, slug, specialty, description, logo_url, website_url, display_order, is_published, created_at"
+    )
     .order("display_order", { ascending: true });
+
+  const brands = (data ?? []) as Brand[];
 
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between gap-4">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Brands</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            {(data ?? []).length} brand{(data ?? []).length !== 1 ? "s" : ""}
+          <h1 className="text-2xl font-bold">Brands</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {brands.length} brand{brands.length !== 1 ? "s" : ""} · drag to
+            reorder
           </p>
         </div>
         <Link
           href="/admin/brands/new"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-accent-foreground text-sm font-medium hover:bg-accent/90 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg font-medium transition-colors bg-accent text-accent-foreground hover:bg-accent/90 px-2.5 py-1.5 text-xs"
         >
-          <Plus className="w-4 h-4" />
-          Add Brand
+          <Plus className="w-4 h-4" /> New Brand
         </Link>
       </div>
-      <BrandsClient brands={(data ?? []) as Brand[]} />
+      <BrandsClient brands={brands} />
     </div>
   );
 }

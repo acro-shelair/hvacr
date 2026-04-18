@@ -1,61 +1,126 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { logActivity } from "@/lib/supabase/logging";
 import type { Role, PermissionKey } from "@/lib/rbac";
+import { logActivity } from "@/lib/supabase/logging";
 
-export async function updateUser(
+export async function inviteUser(email: string) {
+  const supabase = createAdminClient();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const { error } = await supabase.auth.admin.inviteUserByEmail(email, {
+    redirectTo: `${siteUrl}/auth/callback?next=/admin/set-password`,
+  });
+  if (error) throw new Error(error.message);
+  await logActivity("create", "users", `Invited user: ${email}`);
+}
+
+export async function createUser(email: string, password: string) {
+  const supabase = createAdminClient();
+  const { error } = await supabase.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+  });
+  if (error) throw new Error(error.message);
+  await logActivity("create", "users", `Created user: ${email}`);
+}
+
+export async function deleteUser(userId: string) {
+  const supabase = createAdminClient();
+  const { error } = await supabase.auth.admin.deleteUser(userId);
+  if (error) throw new Error(error.message);
+  await logActivity("delete", "users", `Deleted user: ${userId}`);
+}
+
+export async function sendPasswordReset(email: string) {
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/auth/callback?next=/admin/set-password`,
+  });
+  if (error) throw new Error(error.message);
+}
+
+export async function updateUserEmail(userId: string, email: string) {
+  const supabase = createAdminClient();
+  const { error } = await supabase.auth.admin.updateUserById(userId, { email });
+  if (error) throw new Error(error.message);
+}
+
+export async function updateUserPassword(userId: string, password: string) {
+  const supabase = createAdminClient();
+  const { error } = await supabase.auth.admin.updateUserById(userId, { password });
+  if (error) throw new Error(error.message);
+}
+
+export async function setBanStatus(userId: string, banned: boolean) {
+  const supabase = createAdminClient();
+  const { error } = await supabase.auth.admin.updateUserById(userId, {
+    ban_duration: banned ? "87600h" : "none",
+  });
+  if (error) throw new Error(error.message);
+  await logActivity("update", "users", `${banned ? "Banned" : "Unbanned"} user: ${userId}`);
+}
+
+export async function confirmUserEmail(userId: string) {
+  const supabase = createAdminClient();
+  const { error } = await supabase.auth.admin.updateUserById(userId, {
+    email_confirm: true,
+  });
+  if (error) throw new Error(error.message);
+}
+
+export async function upsertUserProfile(
   userId: string,
-  fields: { role: Role; permissions: PermissionKey[] }
+  role: Role,
+  permissions: PermissionKey[]
 ) {
-  const db = createAdminClient();
-  const { error } = await db
+  const supabase = createAdminClient();
+  const { error } = await supabase
     .from("user_profiles")
-    .update({ role: fields.role, permissions: fields.permissions })
-    .eq("user_id", userId);
-
-  if (error) return { error: error.message };
-
-  await logActivity("update", "user_profiles", `Updated user ${userId}`, userId);
-  revalidatePath("/admin/users");
-  return {};
+    .upsert(
+      { user_id: userId, role, permissions, updated_at: new Date().toISOString() },
+      { onConflict: "user_id" }
+    );
+  if (error) throw new Error(error.message);
+  await logActivity("update", "users", `Updated role/permissions for: ${userId}`);
 }
 
-export async function inviteUser(fields: {
-  email: string;
-  role: Role;
-  permissions: PermissionKey[];
-}) {
-  const db = createAdminClient();
+export async function bulkSendPasswordReset() {
+  const supabase = createAdminClient();
+  const { data: { users }, error: listError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+  if (listError) throw new Error(listError.message);
 
-  const { data, error } = await db.auth.admin.inviteUserByEmail(fields.email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/admin/login`,
-  });
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const { createClient } = await import("@supabase/supabase-js");
+  const publicSupabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
-  if (error) return { error: error.message };
+  let sent = 0;
+  let failed = 0;
+  for (const user of users) {
+    if (!user.email) continue;
+    const { error } = await publicSupabase.auth.resetPasswordForEmail(user.email, {
+      redirectTo: `${siteUrl}/auth/callback?next=/admin/set-password`,
+    });
+    if (error) { failed++; } else { sent++; }
+  }
 
-  const userId = data.user.id;
-
-  const { error: profileError } = await db.from("user_profiles").insert({
-    user_id: userId,
-    role: fields.role,
-    permissions: fields.permissions,
-  });
-
-  if (profileError) return { error: profileError.message };
-
-  await logActivity("create", "user_profiles", `Invited user: ${fields.email}`, userId);
-  revalidatePath("/admin/users");
-  return {};
+  await logActivity("update", "users", `Bulk password reset sent to ${sent} users (${failed} failed)`);
+  return { sent, failed, total: users.length };
 }
 
-export async function deleteUser(userId: string, email: string) {
-  const db = createAdminClient();
-  const { error } = await db.auth.admin.deleteUser(userId);
-  if (error) return { error: error.message };
-
-  await logActivity("delete", "user_profiles", `Deleted user: ${email}`, userId);
-  revalidatePath("/admin/users");
-  return {};
+export async function getUserProfiles() {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("user_profiles")
+    .select("user_id, role, permissions");
+  if (error) return [];
+  return data;
 }

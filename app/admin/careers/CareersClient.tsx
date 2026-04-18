@@ -24,6 +24,7 @@ import {
   deleteApplication,
 } from "./actions";
 import type { JobPosting, JobApplication } from "./page";
+import { Button } from "@/components/ui/button";
 
 type Tab = "postings" | "applications";
 
@@ -47,19 +48,21 @@ export default function CareersClient({
           onClick={() => setTab("postings")}
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
             tab === "postings"
-              ? "bg-accent text-accent-foreground"
-              : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
           }`}
         >
           Job Postings
-          <span className="ml-1.5 text-xs opacity-70">{initialPostings.length}</span>
+          <span className="ml-1.5 text-xs opacity-70">
+            {initialPostings.length}
+          </span>
         </button>
         <button
           onClick={() => setTab("applications")}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
             tab === "applications"
-              ? "bg-accent text-accent-foreground"
-              : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
           }`}
         >
           Applications
@@ -149,25 +152,21 @@ function PostingsTab({
   return (
     <div>
       <div className="flex justify-end mb-4">
-        <Link
-          href="/admin/careers/new"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-accent-foreground text-sm font-medium hover:bg-accent/90 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Job
-        </Link>
+        <Button asChild size="sm">
+          <Link href="/admin/careers/new">
+            <Plus className="w-4 h-4 mr-1" />
+            Add Job
+          </Link>
+        </Button>
       </div>
 
       {postings.length === 0 ? (
-        <div className="text-center py-16 text-zinc-500">
+        <div className="text-center py-16 text-muted-foreground">
           <Briefcase className="w-10 h-10 mx-auto mb-3 opacity-40" />
           <p className="text-sm mb-4">No job postings yet.</p>
-          <Link
-            href="/admin/careers/new"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-accent-foreground text-sm font-medium hover:bg-accent/90 transition-colors"
-          >
-            Add your first job
-          </Link>
+          <Button asChild size="sm">
+            <Link href="/admin/careers/new">Add your first job</Link>
+          </Button>
         </div>
       ) : (
         <div className="space-y-2">
@@ -188,84 +187,90 @@ function PostingsTab({
                   setDraggingId(null);
                   setDragOverId(null);
                 }}
-                className={`rounded-xl border bg-zinc-900 transition-all ${
+                className={`flex items-center gap-4 bg-card border border-border rounded-xl px-5 py-4 transition-all ${
                   isDragging ? "opacity-40" : "opacity-100"
-                } ${isDragOver ? "border-accent" : "border-zinc-800"}`}
+                } ${isDragOver ? "border-primary" : ""}`}
               >
-                <div className="flex items-center gap-3 px-4 py-3.5">
-                  <div className="shrink-0 cursor-grab active:cursor-grabbing text-zinc-600 hover:text-zinc-400 transition-colors">
-                    <GripVertical className="w-4 h-4" />
-                  </div>
+                <div className="shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors">
+                  <GripVertical className="w-4 h-4" />
+                </div>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p
-                        className={`text-sm font-medium truncate ${
-                          posting.is_published ? "text-white" : "text-zinc-500"
-                        }`}
-                      >
-                        {posting.title}
-                      </p>
-                      {!posting.is_published && (
-                        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700">
-                          Draft
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-zinc-500 truncate mt-0.5">
-                      {posting.location} · {posting.employment_type}
+                <div className="shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Briefcase className="w-5 h-5 text-primary" />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p
+                      className={`text-sm font-semibold truncate ${
+                        posting.is_published ? "" : "text-muted-foreground"
+                      }`}
+                    >
+                      {posting.title}
                     </p>
-                  </div>
-
-                  <div className="flex items-center gap-1 shrink-0 ml-2">
-                    {isConfirming ? (
-                      <>
-                        <span className="text-xs text-zinc-400 mr-1 hidden sm:block">Delete?</span>
-                        <button
-                          onClick={() => setConfirmDeleteId(null)}
-                          className="text-xs text-zinc-400 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={() => handleDelete(posting.id)}
-                          disabled={isLoading}
-                          className="text-xs text-white bg-destructive hover:bg-destructive/90 px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-50"
-                        >
-                          {isLoading ? "Deleting…" : "Confirm"}
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => handleTogglePublished(posting)}
-                          disabled={isLoading}
-                          title={posting.is_published ? "Unpublish" : "Publish"}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors disabled:opacity-40"
-                        >
-                          {posting.is_published ? (
-                            <Eye className="w-4 h-4" />
-                          ) : (
-                            <EyeOff className="w-4 h-4" />
-                          )}
-                        </button>
-                        <Link
-                          href={`/admin/careers/${posting.id}`}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors"
-                          title="Edit"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Link>
-                        <button
-                          onClick={() => setConfirmDeleteId(posting.id)}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-destructive hover:bg-zinc-800 transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </>
+                    {!posting.is_published && (
+                      <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-secondary text-muted-foreground border border-border">
+                        Draft
+                      </span>
                     )}
                   </div>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">
+                    {posting.location} · {posting.employment_type}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-1 shrink-0 ml-2">
+                  {isConfirming ? (
+                    <>
+                      <span className="text-xs text-muted-foreground mr-1 hidden sm:block">
+                        Delete?
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setConfirmDeleteId(null)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(posting.id)}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? "Deleting…" : "Confirm"}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleTogglePublished(posting)}
+                        disabled={isLoading}
+                        title={posting.is_published ? "Unpublish" : "Publish"}
+                      >
+                        {posting.is_published ? (
+                          <Eye className="w-4 h-4" />
+                        ) : (
+                          <EyeOff className="w-4 h-4" />
+                        )}
+                      </Button>
+                      <Button size="sm" variant="ghost" asChild title="Edit">
+                        <Link href={`/admin/careers/${posting.id}`}>
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Link>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setConfirmDeleteId(posting.id)}
+                        title="Delete"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             );
@@ -330,19 +335,21 @@ function ApplicationsTab({
           onClick={() => setFilter("all")}
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
             filter === "all"
-              ? "bg-accent text-accent-foreground"
-              : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
           }`}
         >
           All
-          <span className="ml-1.5 text-xs opacity-70">{applications.length}</span>
+          <span className="ml-1.5 text-xs opacity-70">
+            {applications.length}
+          </span>
         </button>
         <button
           onClick={() => setFilter("unread")}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
             filter === "unread"
-              ? "bg-accent text-accent-foreground"
-              : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
           }`}
         >
           Unread
@@ -355,10 +362,12 @@ function ApplicationsTab({
       </div>
 
       {visible.length === 0 && (
-        <div className="text-center py-16 text-zinc-500">
+        <div className="text-center py-16 text-muted-foreground">
           <MailOpen className="w-10 h-10 mx-auto mb-3 opacity-40" />
           <p className="text-sm">
-            {filter === "unread" ? "No unread applications." : "No applications yet."}
+            {filter === "unread"
+              ? "No unread applications."
+              : "No applications yet."}
           </p>
         </div>
       )}
@@ -374,118 +383,139 @@ function ApplicationsTab({
               key={app.id}
               className={`rounded-xl border transition-colors ${
                 app.is_read
-                  ? "bg-zinc-900 border-zinc-800"
-                  : "bg-zinc-800/70 border-zinc-700"
+                  ? "bg-card border-border"
+                  : "bg-primary/5 border-primary/30"
               }`}
             >
               <button
                 onClick={() => handleExpand(app)}
                 className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
               >
-                <div className="flex-shrink-0 mt-0.5">
+                <div className="shrink-0 mt-0.5">
                   {app.is_read ? (
-                    <MailOpen className="w-4 h-4 text-zinc-500" />
+                    <MailOpen className="w-4 h-4 text-muted-foreground" />
                   ) : (
-                    <Mail className="w-4 h-4 text-accent" />
+                    <Mail className="w-4 h-4 text-primary" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                     <span
                       className={`text-sm font-medium truncate ${
-                        app.is_read ? "text-zinc-300" : "text-white"
+                        app.is_read
+                          ? "text-muted-foreground"
+                          : "text-foreground"
                       }`}
                     >
                       {app.name}
                     </span>
-                    <span className="text-xs text-zinc-500 truncate hidden sm:block">
+                    <span className="text-xs text-muted-foreground truncate hidden sm:block">
                       {app.email}
                     </span>
-                    <span className="text-[10px] font-medium text-zinc-400 bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 hidden md:block">
+                    <span className="text-[10px] font-medium text-muted-foreground bg-secondary border border-border rounded px-1.5 py-0.5 hidden md:block">
                       {app.position}
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-500 truncate mt-0.5">{app.message}</p>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">
+                    {app.message}
+                  </p>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0 ml-2">
-                  <span className="text-xs text-zinc-600 hidden sm:block whitespace-nowrap">
+                <div className="flex items-center gap-3 shrink-0 ml-2">
+                  <span className="text-xs text-muted-foreground hidden sm:block whitespace-nowrap">
                     {formatDate(app.created_at)}
                   </span>
                   {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-zinc-500" />
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-zinc-500" />
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   )}
                 </div>
               </button>
 
               {isExpanded && (
-                <div className="px-4 pb-4 border-t border-zinc-700/50">
+                <div className="px-4 pb-4 border-t border-border">
                   <div className="pt-4 grid sm:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Name</p>
-                      <p className="text-sm text-zinc-200">{app.name}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                        Name
+                      </p>
+                      <p className="text-sm">{app.name}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Email</p>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                        Email
+                      </p>
                       <a
                         href={`mailto:${app.email}`}
-                        className="text-sm text-accent hover:underline"
+                        className="text-sm text-primary hover:underline"
                       >
                         {app.email}
                       </a>
                     </div>
                     {app.phone && (
                       <div>
-                        <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Phone</p>
-                        <a href={`tel:${app.phone}`} className="text-sm text-zinc-200">
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                          Phone
+                        </p>
+                        <a href={`tel:${app.phone}`} className="text-sm">
                           {app.phone}
                         </a>
                       </div>
                     )}
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Position</p>
-                      <p className="text-sm text-zinc-200">{app.position}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                        Position
+                      </p>
+                      <p className="text-sm">{app.position}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Received</p>
-                      <p className="text-sm text-zinc-200">{formatDate(app.created_at)}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                        Received
+                      </p>
+                      <p className="text-sm">{formatDate(app.created_at)}</p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Cover Letter / Message</p>
-                    <p className="text-sm text-zinc-200 whitespace-pre-wrap leading-relaxed">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                      Cover Letter / Message
+                    </p>
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed">
                       {app.message}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-end gap-2 mt-5 pt-4 border-t border-zinc-800">
+                  <div className="flex items-center justify-end gap-2 mt-5 pt-4 border-t border-border">
                     {isConfirming ? (
                       <>
-                        <span className="text-sm text-zinc-400 mr-1">Delete this application?</span>
-                        <button
+                        <span className="text-sm text-muted-foreground mr-1">
+                          Delete this application?
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
                           onClick={() => setConfirmDeleteId(null)}
-                          className="text-xs text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
                         >
                           Cancel
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
                           onClick={() => handleDelete(app.id)}
                           disabled={isDeleting}
-                          className="text-xs text-white bg-destructive hover:bg-destructive/90 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                         >
                           {isDeleting ? "Deleting…" : "Confirm Delete"}
-                        </button>
+                        </Button>
                       </>
                     ) : (
-                      <button
+                      <Button
+                        size="sm"
+                        variant="ghost"
                         onClick={() => setConfirmDeleteId(app.id)}
-                        className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-destructive px-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5 text-destructive mr-1.5" />
                         Delete
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>

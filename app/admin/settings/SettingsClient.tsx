@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { saveSettings } from "./actions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 type Field = { key: string; label: string; placeholder?: string; group: string };
 
@@ -37,28 +40,23 @@ export default function SettingsClient({
   const groups = Array.from(new Set(fields.map((f) => f.group)));
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl">
+    <form onSubmit={handleSubmit} className="space-y-10 max-w-2xl pb-16">
       {groups.map((group) => (
-        <section key={group}>
-          <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
-            {group}
-          </h2>
+        <section key={group} className="space-y-5">
+          <h2 className="text-base font-semibold border-b border-border pb-2">{group}</h2>
           <div className="space-y-4">
             {fields
               .filter((f) => f.group === group)
               .map((field) => (
-                <div key={field.key}>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">
-                    {field.label}
-                  </label>
-                  <input
+                <div key={field.key} className="space-y-1.5">
+                  <Label>{field.label}</Label>
+                  <Input
                     type="text"
                     value={values[field.key] ?? ""}
                     onChange={(e) =>
                       setValues((prev) => ({ ...prev, [field.key]: e.target.value }))
                     }
                     placeholder={field.placeholder}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors"
                   />
                 </div>
               ))}
@@ -67,21 +65,17 @@ export default function SettingsClient({
       ))}
 
       {error && (
-        <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-xl px-4 py-3">
+        <p className="text-sm text-destructive bg-destructive/10 px-4 py-3 rounded-lg">
           {error}
         </p>
       )}
 
       <div className="flex items-center gap-4">
-        <button
-          type="submit"
-          disabled={saving}
-          className="px-5 py-2.5 rounded-xl bg-accent text-accent-foreground text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50"
-        >
+        <Button type="submit" disabled={saving}>
           {saving ? "Saving…" : "Save Settings"}
-        </button>
+        </Button>
         {saved && (
-          <span className="text-sm text-emerald-400">Saved successfully.</span>
+          <span className="text-sm text-emerald-500">Saved successfully.</span>
         )}
       </div>
     </form>

@@ -39,30 +39,75 @@ const navGroups: NavGroup[] = [
   {
     label: "Content",
     items: [
-      { label: "Home Page",  href: "/admin/home",       icon: Home,      permission: "home" },
-      { label: "Brands",     href: "/admin/brands",     icon: Tag,       permission: "brands" },
-      { label: "Industries", href: "/admin/industries", icon: Building2, permission: "industries" },
+      {
+        label: "Home Page",
+        href: "/admin/home",
+        icon: Home,
+        permission: "home",
+      },
+      {
+        label: "Brands",
+        href: "/admin/brands",
+        icon: Tag,
+        permission: "brands",
+      },
+      {
+        label: "Industries",
+        href: "/admin/industries",
+        icon: Building2,
+        permission: "industries",
+      },
     ],
   },
   {
     label: "Engage",
     items: [
-      { label: "Messages", href: "/admin/messages", icon: Inbox,      permission: "messages" },
-      { label: "FAQs",     href: "/admin/faqs",     icon: HelpCircle, permission: "faqs" },
+      {
+        label: "Messages",
+        href: "/admin/messages",
+        icon: Inbox,
+        permission: "messages",
+      },
+      {
+        label: "FAQs",
+        href: "/admin/faqs",
+        icon: HelpCircle,
+        permission: "faqs",
+      },
     ],
   },
   {
     label: "People",
     items: [
-      { label: "Careers", href: "/admin/careers", icon: Briefcase, permission: "careers" },
-      { label: "Users",   href: "/admin/users",   icon: Users,     permission: "admin_only" },
+      {
+        label: "Careers",
+        href: "/admin/careers",
+        icon: Briefcase,
+        permission: "careers",
+      },
+      {
+        label: "Users",
+        href: "/admin/users",
+        icon: Users,
+        permission: "admin_only",
+      },
     ],
   },
   {
     label: "Admin",
     items: [
-      { label: "Settings", href: "/admin/settings", icon: SlidersHorizontal, permission: "settings" },
-      { label: "Logs",     href: "/admin/logs",     icon: FileText,          permission: "logs" },
+      {
+        label: "Settings",
+        href: "/admin/settings",
+        icon: SlidersHorizontal,
+        permission: "settings",
+      },
+      {
+        label: "Logs",
+        href: "/admin/logs",
+        icon: FileText,
+        permission: "logs",
+      },
     ],
   },
 ];
@@ -125,10 +170,12 @@ export default function AdminSidebar({
             alt="HVACR Group"
             width={28}
             height={28}
-            className="rounded-md flex-shrink-0"
+            className="rounded-md shrink-0"
             style={{ width: 28, height: 28 }}
           />
-          <p className="text-white font-semibold text-sm leading-none">Admin Panel</p>
+          <p className="text-white font-semibold text-sm leading-none">
+            Admin Panel
+          </p>
         </div>
       </div>
 
@@ -153,7 +200,7 @@ export default function AdminSidebar({
               alt="HVACR Group"
               width={36}
               height={36}
-              className="rounded-md flex-shrink-0"
+              className="rounded-md shrink-0"
               style={{ width: 36, height: 36 }}
             />
             <div className="flex-1">
@@ -207,7 +254,7 @@ export default function AdminSidebar({
                               : "text-zinc-400 hover:text-white hover:bg-zinc-800"
                           }`}
                         >
-                          <Icon className="w-4 h-4 flex-shrink-0" />
+                          <Icon className="w-4 h-4 shrink-0" />
                           {label}
                         </Link>
                       );
@@ -226,14 +273,14 @@ export default function AdminSidebar({
             target="_blank"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
           >
-            <ExternalLink className="w-4 h-4 flex-shrink-0" />
+            <ExternalLink className="w-4 h-4 shrink-0" />
             View Site
           </Link>
           <button
             onClick={signOut}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
           >
-            <LogOut className="w-4 h-4 flex-shrink-0" />
+            <LogOut className="w-4 h-4 shrink-0" />
             Sign Out
           </button>
           <div className="px-3 pt-3 space-y-1">

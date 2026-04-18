@@ -4,6 +4,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createJobPosting, updateJobPosting } from "./actions";
 import type { JobPosting } from "./page";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const EMPLOYMENT_TYPES = ["Full-time", "Part-time", "Casual", "Apprenticeship"] as const;
 
@@ -60,111 +71,108 @@ export default function JobPostingEditor({ posting }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl space-y-5">
-      <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-          Job Title
-        </label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="e.g. Refrigeration Technician"
-          required
-          className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-accent transition-colors"
-        />
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-5">
-        <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-            Location
-          </label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="e.g. Brisbane, QLD"
-            required
-            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-accent transition-colors"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-            Employment Type
-          </label>
-          <select
-            value={employmentType}
-            onChange={(e) => setEmploymentType(e.target.value)}
-            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent transition-colors"
-          >
-            {EMPLOYMENT_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-          Description
-        </label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Describe the role, responsibilities, and requirements…"
-          required
-          rows={10}
-          className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-accent transition-colors resize-y"
-        />
-      </div>
-
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          role="switch"
-          aria-checked={isPublished}
-          onClick={() => setIsPublished((v) => !v)}
-          className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-            isPublished ? "bg-accent" : "bg-zinc-700"
-          }`}
+    <form onSubmit={handleSubmit} className="space-y-10 pb-16">
+      {/* Actions row */}
+      <div className="flex items-center justify-end gap-3">
+        <Button type="button" variant="outline" onClick={() => router.back()} disabled={saving}>
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          disabled={saving || !title.trim() || !location.trim() || !description.trim()}
         >
-          <span
-            className={`inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform duration-200 ${
-              isPublished ? "translate-x-4" : "translate-x-0"
-            }`}
-          />
-        </button>
-        <span className="text-sm text-zinc-300">
-          {isPublished ? "Published" : "Draft (hidden from public site)"}
-        </span>
+          {saving ? "Saving…" : isEdit ? "Save Changes" : "Create Job Posting"}
+        </Button>
       </div>
 
       {error && (
-        <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-4 py-2.5">
+        <p className="text-sm text-destructive bg-destructive/10 px-4 py-3 rounded-lg">
           {error}
         </p>
       )}
 
-      <div className="flex items-center gap-3 pt-2">
-        <button
-          type="submit"
-          disabled={saving || !title.trim() || !location.trim() || !description.trim()}
-          className="px-5 py-2 rounded-lg bg-accent text-accent-foreground text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50"
-        >
-          {saving ? "Saving…" : isEdit ? "Save Changes" : "Create Job Posting"}
-        </button>
-        <button
-          type="button"
-          onClick={() => router.push("/admin/careers")}
-          className="px-5 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 text-sm font-medium transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
+      {/* ── Job Details ──────────────────────────────────────────────────── */}
+      <section className="space-y-5">
+        <h2 className="text-base font-semibold border-b border-border pb-2">Job Details</h2>
+
+        <div className="grid md:grid-cols-2 gap-5">
+          {/* Title */}
+          <div className="space-y-1.5 md:col-span-2">
+            <Label>Job Title</Label>
+            <Input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Refrigeration Technician"
+              required
+            />
+          </div>
+
+          {/* Location */}
+          <div className="space-y-1.5">
+            <Label>Location</Label>
+            <Input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g. Brisbane, QLD"
+              required
+            />
+          </div>
+
+          {/* Employment Type */}
+          <div className="space-y-1.5">
+            <Label>Employment Type</Label>
+            <Select value={employmentType} onValueChange={setEmploymentType}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {EMPLOYMENT_TYPES.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Description */}
+          <div className="space-y-1.5 md:col-span-2">
+            <Label>Description</Label>
+            <Textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe the role, responsibilities, and requirements…"
+              required
+              rows={10}
+              className="resize-y"
+            />
+          </div>
+        </div>
+
+        {/* Publish toggle */}
+        <div className="flex items-center gap-3 pt-1">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isPublished}
+            onClick={() => setIsPublished((v) => !v)}
+            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+              isPublished ? "bg-primary" : "bg-secondary"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform duration-200 ${
+                isPublished ? "translate-x-4" : "translate-x-0"
+              }`}
+            />
+          </button>
+          <span className="text-sm text-muted-foreground">
+            {isPublished ? "Published" : "Draft (hidden from public site)"}
+          </span>
+        </div>
+      </section>
     </form>
   );
 }

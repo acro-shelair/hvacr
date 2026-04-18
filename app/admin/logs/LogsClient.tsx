@@ -51,11 +51,11 @@ export default function LogsClient({ logs }: { logs: ActivityLog[] }) {
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 mb-5">
         <div className="flex items-center gap-2">
-          <label className="text-xs text-zinc-500 uppercase tracking-wider shrink-0">Action</label>
+          <label className="text-xs text-muted-foreground uppercase tracking-wider shrink-0">Action</label>
           <select
             value={actionFilter}
             onChange={(e) => setActionFilter(e.target.value)}
-            className="text-sm bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-zinc-300 focus:outline-none focus:border-accent"
+            className="text-sm bg-card border border-border rounded-lg px-3 py-1.5 text-foreground focus:outline-none focus:border-primary"
           >
             {actions.map((a) => (
               <option key={a} value={a}>{a === "all" ? "All actions" : a}</option>
@@ -64,11 +64,11 @@ export default function LogsClient({ logs }: { logs: ActivityLog[] }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="text-xs text-zinc-500 uppercase tracking-wider shrink-0">Section</label>
+          <label className="text-xs text-muted-foreground uppercase tracking-wider shrink-0">Section</label>
           <select
             value={tableFilter}
             onChange={(e) => setTableFilter(e.target.value)}
-            className="text-sm bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-zinc-300 focus:outline-none focus:border-accent"
+            className="text-sm bg-card border border-border rounded-lg px-3 py-1.5 text-foreground focus:outline-none focus:border-primary"
           >
             {tables.map((t) => (
               <option key={t} value={t}>
@@ -81,17 +81,17 @@ export default function LogsClient({ logs }: { logs: ActivityLog[] }) {
         {hasFilter && (
           <button
             onClick={() => { setActionFilter("all"); setTableFilter("all"); }}
-            className="text-sm text-zinc-500 hover:text-white transition-colors"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear filters
           </button>
         )}
 
-        <span className="ml-auto text-xs text-zinc-600">{visible.length} entries</span>
+        <span className="ml-auto text-xs text-muted-foreground">{visible.length} entries</span>
       </div>
 
       {visible.length === 0 ? (
-        <div className="text-center py-16 text-zinc-500">
+        <div className="text-center py-16 text-muted-foreground">
           <FileText className="w-10 h-10 mx-auto mb-3 opacity-40" />
           <p className="text-sm">No logs found.</p>
         </div>
@@ -100,7 +100,7 @@ export default function LogsClient({ logs }: { logs: ActivityLog[] }) {
           {visible.map((log) => (
             <div
               key={log.id}
-              className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 flex flex-wrap items-start gap-3"
+              className="rounded-xl border border-border bg-card px-4 py-3 flex flex-wrap items-start gap-3"
             >
               <span
                 className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
@@ -110,13 +110,13 @@ export default function LogsClient({ logs }: { logs: ActivityLog[] }) {
                 {log.action}
               </span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-zinc-200">
-                  <span className="font-medium text-zinc-400 mr-2">
+                <p className="text-sm text-foreground">
+                  <span className="font-medium text-muted-foreground mr-2">
                     {TABLE_LABEL[log.table_name] ?? log.table_name}
                   </span>
                   {log.details}
                 </p>
-                <p className="text-xs text-zinc-600 mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   {log.user_email ?? "system"} · {fmt(log.created_at)}
                 </p>
               </div>
