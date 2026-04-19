@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { signOutAction } from "./actions";
 import {
   Home,
@@ -143,6 +144,18 @@ export default function AdminSidebar({
     router.push("/admin/login");
     router.refresh();
   };
+
+  useEffect(() => {
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "TOKEN_REFRESHED" && !session) {
+        supabase.auth.signOut().then(() => {
+          router.push("/admin/login");
+        });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [router]);
 
   const groups = visibleGroups(profile);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});

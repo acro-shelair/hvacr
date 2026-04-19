@@ -31,8 +31,24 @@ export async function middleware(request: NextRequest) {
 
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
+
+  if (authError?.code === "refresh_token_not_found") {
+    const url = request.nextUrl.clone();
+    const isAdminPath = pathname.startsWith("/admin");
+    if (isAdminPath) url.pathname = "/admin/login";
+    const res = isAdminPath ? NextResponse.redirect(url) : NextResponse.next({ request });
+    request.cookies.getAll().forEach(({ name }) => {
+      if (name.startsWith("sb-")) res.cookies.delete(name);
+    });
+    return res;
+  }
+
+  const isAdminRoute = pathname.startsWith("/admin");
   const isLoginPath = pathname === "/admin/login";
+
+  if (!isAdminRoute) return supabaseResponse;
 
   const redirect = (dest: string) => {
     const url = request.nextUrl.clone();
@@ -82,5 +98,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)"],
 };

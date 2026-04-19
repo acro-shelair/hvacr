@@ -83,10 +83,11 @@ export default async function ContactPage() {
 
       <section className="bg-navy diagonal-texture -mt-18 pt-26 sm:pt-32 md:pt-43 pb-14 sm:pb-16 md:pb-20 lg:pb-25">
         <div className="container-main">
+          <p className="hero-eyebrow mb-3 sm:mb-4">Got any more questions?</p>
           <h1 className="font-display font-extrabold text-primary-foreground text-[32px] sm:text-[40px] md:text-[56px] leading-tight mb-4">
-            Contact Us
+            <span className="border-b-4 border-accent pb-1">Contact</span> Us.
           </h1>
-          <p className="text-primary-foreground/70 font-body text-base sm:text-lg max-w-112.5">
+          <p className="text-primary-foreground/70 font-body text-base sm:text-lg max-w-137.5">
             We&apos;d love to hear from you. Reach out for a quote, enquiry, or
             to discuss your project.
           </p>

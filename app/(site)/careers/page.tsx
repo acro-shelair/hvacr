@@ -3,6 +3,7 @@ import { Award, MapPin, Send, TrendingUp, Users } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { createClient } from "@/lib/supabase/server";
 import ApplyButton from "./ApplyButton";
+import JobDescription from "./JobDescription";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -26,7 +27,8 @@ const jsonLd = {
       addressCountry: "AU",
     },
   },
-  occupationalCategory: "Refrigeration Mechanic, Air Conditioning Technician, HVAC Engineer",
+  occupationalCategory:
+    "Refrigeration Mechanic, Air Conditioning Technician, HVAC Engineer",
   jobLocationType: "TELECOMMUTE",
   applicantLocationRequirements: {
     "@type": "Country",
@@ -86,10 +88,16 @@ export default async function CareersPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
       <section className="bg-navy diagonal-texture -mt-18 pt-26 sm:pt-32 md:pt-43 pb-14 sm:pb-16 md:pb-20 lg:pb-25">
         <div className="container-main">
+          <p className="hero-eyebrow mb-3 sm:mb-4">Grow your career with us</p>
           <h1 className="font-display font-extrabold text-primary-foreground text-[32px] sm:text-[40px] md:text-[56px] leading-tight mb-4">
-            Join the HVACR Group Family
+            Join the{" "}
+            <span className="border-b-4 border-accent pb-1">
+              HVACR Group Family
+            </span>
+            .
           </h1>
           <p className="text-primary-foreground/70 font-body text-base sm:text-lg max-w-137.5">
             Build your career with one of Queensland&apos;s most respected trade
@@ -156,9 +164,7 @@ export default async function CareersPage() {
                       </p>
                     )}
                     {job.description && (
-                      <p className="text-muted-foreground font-body text-sm leading-relaxed line-clamp-3">
-                        {job.description}
-                      </p>
+                      <JobDescription text={job.description} />
                     )}
                     <ApplyButton
                       jobPostingId={job.id}
@@ -195,9 +201,7 @@ export default async function CareersPage() {
               <p className="text-accent-foreground/90 font-body text-base sm:text-lg mb-6 max-w-122.5 mx-auto">
                 Send your resume and a cover letter to our recruitment team.
               </p>
-              <ApplyButton
-                className="inline-flex items-center justify-center bg-navy text-primary-foreground font-body font-medium px-5 sm:px-8 h-12 sm:h-13 rounded-lg transition-transform duration-200 hover:scale-[1.03] text-sm sm:text-[15px] gap-2 w-full sm:w-auto"
-              >
+              <ApplyButton className="inline-flex items-center justify-center bg-navy text-primary-foreground font-body font-medium px-5 sm:px-8 h-12 sm:h-13 rounded-lg transition-transform duration-200 hover:scale-[1.03] text-sm sm:text-[15px] gap-2 w-full sm:w-auto">
                 <Send className="w-4 h-4 shrink-0" />
                 <span>Submit Your Application</span>
               </ApplyButton>

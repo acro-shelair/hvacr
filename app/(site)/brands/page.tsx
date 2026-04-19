@@ -87,10 +87,13 @@ export default async function BrandsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
       <section className="bg-navy diagonal-texture -mt-18 pt-26 sm:pt-32 md:pt-43 pb-14 sm:pb-16 md:pb-20 lg:pb-25">
         <div className="container-main">
+          <p className="hero-eyebrow mb-3 sm:mb-4">See where we Excel</p>
           <h1 className="font-display font-extrabold text-primary-foreground text-[32px] sm:text-[40px] md:text-[56px] leading-tight mb-4">
-            Our Brand Portfolio
+            Our Brand{" "}
+            <span className="border-b-4 border-accent pb-1">Portfolio</span>.
           </h1>
           <p className="text-primary-foreground/70 font-body text-base sm:text-lg max-w-137.5">
             Three specialist brands, each a leader in their field — united by
