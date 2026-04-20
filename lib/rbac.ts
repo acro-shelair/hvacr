@@ -65,6 +65,7 @@ export const PATH_PERMISSION_MAP: Record<string, PermissionKey | "admin_only"> =
   "/admin/users": "admin_only",
   "/admin/settings": "settings",
   "/admin/logs": "logs",
+  "/admin/maintenance": "admin_only",
 };
 
 /** Return the first admin path an employee is allowed to visit. */

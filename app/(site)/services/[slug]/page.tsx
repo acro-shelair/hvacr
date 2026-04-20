@@ -68,11 +68,14 @@ async function getAllServices(): Promise<Service[]> {
   return (data ?? []) as Service[];
 }
 
-export const revalidate = 60;
+export const revalidate = 0; //change to 60 if you want it to change only every 60 seconds
 
 export async function generateStaticParams() {
   const db = createAdminClient();
-  const { data } = await db.from("services").select("slug").eq("is_published", true);
+  const { data } = await db
+    .from("services")
+    .select("slug")
+    .eq("is_published", true);
   return (data ?? []).map((s: { slug: string }) => ({ slug: s.slug }));
 }
 
@@ -108,7 +111,10 @@ export default async function ServiceDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [service, allServices] = await Promise.all([getService(slug), getAllServices()]);
+  const [service, allServices] = await Promise.all([
+    getService(slug),
+    getAllServices(),
+  ]);
 
   if (!service) notFound();
 
@@ -124,7 +130,9 @@ export default async function ServiceDetailPage({
       {service.schema_json && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(service.schema_json) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(service.schema_json),
+          }}
         />
       )}
 
@@ -150,10 +158,7 @@ export default async function ServiceDetailPage({
             <div>
               <p className="hero-eyebrow mb-2">{service.eyebrow}</p>
               <h1 className="font-display font-extrabold text-primary-foreground text-[32px] sm:text-[40px] md:text-[52px] leading-tight">
-                {service.title
-                  .split(" ")
-                  .slice(0, -1)
-                  .join(" ")}{" "}
+                {service.title.split(" ").slice(0, -1).join(" ")}{" "}
                 <span className="border-b-4 border-accent pb-1">
                   {service.title.split(" ").slice(-1)[0]}
                 </span>
@@ -165,7 +170,10 @@ export default async function ServiceDetailPage({
             {service.hero_description}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 mt-8 sm:ml-19">
-            <Link href={service.cta_btn1_href} className="btn-primary rounded-full px-7">
+            <Link
+              href={service.cta_btn1_href}
+              className="btn-primary rounded-full px-7"
+            >
               {service.cta_btn1_label}
             </Link>
             <a
@@ -332,7 +340,10 @@ export default async function ServiceDetailPage({
               {service.cta_body}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href={service.cta_btn1_href} className="btn-primary rounded-full px-8">
+              <Link
+                href={service.cta_btn1_href}
+                className="btn-primary rounded-full px-8"
+              >
                 {service.cta_btn1_label}
               </Link>
               <a
