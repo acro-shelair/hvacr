@@ -68,6 +68,8 @@ async function getAllServices(): Promise<Service[]> {
   return (data ?? []) as Service[];
 }
 
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   const db = createAdminClient();
   const { data } = await db.from("services").select("slug").eq("is_published", true);
