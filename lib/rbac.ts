@@ -10,6 +10,7 @@ export const PERMISSION_KEYS = [
   "home",
   "brands",
   "industries",
+  "services",
   "messages",
   "faqs",
   "careers",
@@ -23,6 +24,7 @@ export const PERMISSION_LABELS: Record<PermissionKey, string> = {
   home: "Home Page",
   brands: "Brands",
   industries: "Industries",
+  services: "Services",
   messages: "Messages",
   faqs: "FAQs",
   careers: "Careers",
@@ -36,7 +38,7 @@ export const PERMISSION_PRESETS: Record<
 > = {
   content_editor: {
     label: "Content Editor",
-    permissions: ["home", "brands", "industries", "faqs"],
+    permissions: ["home", "brands", "industries", "services", "faqs"],
   },
   inbox_only: {
     label: "Inbox Only",
@@ -56,6 +58,7 @@ export const PATH_PERMISSION_MAP: Record<string, PermissionKey | "admin_only"> =
   "/admin/home": "home",
   "/admin/brands": "brands",
   "/admin/industries": "industries",
+  "/admin/services": "services",
   "/admin/messages": "messages",
   "/admin/faqs": "faqs",
   "/admin/careers": "careers",
@@ -72,6 +75,7 @@ export function getDefaultPage(profile: UserProfile): string {
     ["home", "/admin/home"],
     ["brands", "/admin/brands"],
     ["industries", "/admin/industries"],
+    ["services", "/admin/services"],
     ["messages", "/admin/messages"],
     ["faqs", "/admin/faqs"],
     ["careers", "/admin/careers"],

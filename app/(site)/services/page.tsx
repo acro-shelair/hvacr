@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
-import {
-  Thermometer,
-  Wind,
-  Snowflake,
-  Wrench,
-  Building2,
-  Zap,
-  CheckCircle2,
-  Phone,
-} from "lucide-react";
+import { CheckCircle2, Phone, ArrowRight } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
+import Link from "next/link";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getServiceIcon } from "@/lib/serviceIcons";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -63,81 +57,6 @@ export const metadata: Metadata = {
   },
 };
 
-const services = [
-  {
-    icon: Wind,
-    title: "Commercial Air Conditioning",
-    description:
-      "Design, supply, and installation of commercial HVAC systems for offices, retail centres, hospitals, and industrial facilities. We size, specify, and commission systems built to last.",
-    features: [
-      "Ducted & split systems",
-      "VRF/VRV multi-zone systems",
-      "Building management integration",
-      "Energy efficiency assessments",
-    ],
-  },
-  {
-    icon: Snowflake,
-    title: "Commercial Refrigeration",
-    description:
-      "Full-scope refrigeration solutions for supermarkets, food processing plants, distribution centres, and hospitality venues. ARCtick certified technicians across all refrigerant types.",
-    features: [
-      "Display case & coolroom fit-outs",
-      "Remote condensing units",
-      "Low-temp freezer systems",
-      "Refrigerant management",
-    ],
-  },
-  {
-    icon: Building2,
-    title: "Cold Room Construction",
-    description:
-      "Custom-engineered cold rooms and freezer rooms built to your exact specifications. From panel selection to refrigeration plant, we handle end-to-end construction and commissioning.",
-    features: [
-      "Walk-in coolrooms & freezers",
-      "Insulated panel systems",
-      "HACCP-compliant designs",
-      "Blast chiller integration",
-    ],
-  },
-  {
-    icon: Wrench,
-    title: "Preventative Maintenance",
-    description:
-      "Scheduled maintenance programs that extend equipment life, reduce energy costs, and prevent costly breakdowns. Tailored service agreements for single sites or national portfolios.",
-    features: [
-      "Planned maintenance schedules",
-      "Filter & coil servicing",
-      "Performance reporting",
-      "Compliance documentation",
-    ],
-  },
-  {
-    icon: Thermometer,
-    title: "Industrial Cooling Systems",
-    description:
-      "Heavy-duty process cooling solutions for manufacturing, pharmaceutical, mining, and data centre environments. We engineer systems that handle the toughest thermal loads.",
-    features: [
-      "Process chillers & cooling towers",
-      "Glycol & brine systems",
-      "Data centre precision cooling",
-      "Custom industrial design",
-    ],
-  },
-  {
-    icon: Zap,
-    title: "Emergency Repairs",
-    description:
-      "24/7 emergency response for breakdowns — because refrigeration failure can't wait. Our rapid-response teams are dispatched across QLD and NSW to get you back up fast.",
-    features: [
-      "24/7 call-out availability",
-      "Same-day response target",
-      "All major brands serviced",
-      "Loan equipment available",
-    ],
-  },
-];
-
 const whyChoose = [
   "50+ years of combined trade experience",
   "ARCtick & QBCC licensed technicians",
@@ -147,7 +66,22 @@ const whyChoose = [
   "Transparent, fixed-price quoting",
 ];
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const db = createAdminClient();
+  const { data } = await db
+    .from("services")
+    .select("slug, title, hero_description, icon_name, features")
+    .eq("is_published", true)
+    .order("display_order", { ascending: true });
+
+  const services = (data ?? []) as {
+    slug: string;
+    title: string;
+    hero_description: string;
+    icon_name: string;
+    features: string[];
+  }[];
+
   return (
     <>
       <script
@@ -190,9 +124,10 @@ export default function ServicesPage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {services.map((service, i) => {
-              const Icon = service.icon;
+              const Icon = getServiceIcon(service.icon_name);
+              const previewFeatures = (service.features ?? []).slice(0, 4);
               return (
-                <AnimatedSection key={service.title} delay={i * 0.08}>
+                <AnimatedSection key={service.slug} delay={i * 0.08}>
                   <div className="card-elevated h-full flex flex-col group hover:-translate-y-1.5 transition-transform duration-300">
                     <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5 group-hover:bg-accent/20 transition-colors duration-300">
                       <Icon className="w-6 h-6 text-accent" />
@@ -201,10 +136,10 @@ export default function ServicesPage() {
                       {service.title}
                     </h3>
                     <p className="text-muted-foreground text-sm sm:text-[15px] leading-relaxed mb-5">
-                      {service.description}
+                      {service.hero_description.split("—")[0].trim()}
                     </p>
-                    <ul className="mt-auto space-y-2">
-                      {service.features.map((feat) => (
+                    <ul className="space-y-2">
+                      {previewFeatures.map((feat) => (
                         <li
                           key={feat}
                           className="flex items-start gap-2.5 text-sm text-charcoal/80"
@@ -214,6 +149,13 @@ export default function ServicesPage() {
                         </li>
                       ))}
                     </ul>
+                    <Link
+                      href={`/services/${service.slug}`}
+                      className="flex items-center gap-1.5 text-accent text-sm font-medium mt-6 pt-5 border-t border-border hover:gap-2.5 transition-all duration-200"
+                    >
+                      Learn more
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
                   </div>
                 </AnimatedSection>
               );
