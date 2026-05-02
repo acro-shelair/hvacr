@@ -13,7 +13,7 @@ const credentials = [
     logo: arctick,
     alt: "ARCtick Certified",
     label: "ARCtick Certified",
-    lines: ["Licence 61340"],
+    lines: ["Licence 61340", "PQC No. 3210O"],
   },
   {
     logo: qbcc,
@@ -66,7 +66,10 @@ const CredentialsStrip = () => (
                   {c.label}
                 </div>
                 {c.lines.map((line) => (
-                  <div key={line} className="text-[10px] text-muted-foreground mt-0.5">
+                  <div
+                    key={line}
+                    className="text-[10px] text-muted-foreground mt-0.5"
+                  >
                     {line}
                   </div>
                 ))}
